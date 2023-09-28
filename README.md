@@ -1,3 +1,3 @@
 # Nutribalance
-Luis Fernando López Echeverri
+Luis Fernando López Echeverri <br />
 Andres Felipe Ramirez Suarez
