@@ -1,0 +1,18 @@
+cookie:
+  expiry_days: 0
+  key: cookie_test
+  name: cookie_test
+credentials:
+  usernames:
+    admin:
+      email: admin@gmail.com
+      name: admin
+      password: $2b$12$sP2Kjsc1luQeivXSnUH1E.VuSYCGUEtT5kco2bLL.1KuTiW7RxgfS
+    admin2:
+      email: emailprueba@gmail.com
+      name: admin2
+      password: $2b$12$D62HQullugh5ykJ.HeFG7OfUcL6xshXBaN/pg2f/MCPqD4ZBCGMF6
+    user2:
+      email: user2@gmail.com
+      name: Usuario 2
+      password: $2b$12$q2kZBpGQw.QyNdidJUdB9uLp.CAxKYZE6i6DRtBvgeWiYCTyi9ZoO
