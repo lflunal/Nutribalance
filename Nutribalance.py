@@ -1,197 +1,205 @@
-{
-  "nbformat": 4,
-  "nbformat_minor": 0,
-  "metadata": {
-    "colab": {
-      "provenance": [],
-      "authorship_tag": "ABX9TyOb44HKOe2gk8JjfymV14Kj",
-      "include_colab_link": true
-    },
-    "kernelspec": {
-      "name": "python3",
-      "display_name": "Python 3"
-    },
-    "language_info": {
-      "name": "python"
+#%%writefile app.py
+import pandas as pd
+
+import yaml
+from yaml.loader import SafeLoader
+from pathlib import Path
+
+import streamlit as st
+import streamlit_extras
+import streamlit_authenticator as stauth
+
+file_path = Path(__file__).parent / "pages/usuariosTest.yaml"
+with file_path.open() as file:
+    datos_usuarios = yaml.load(file, Loader=SafeLoader)
+
+authenticator = stauth.Authenticate(
+    datos_usuarios["credentials"],
+    datos_usuarios["cookie"]["name"],
+    datos_usuarios["cookie"]["key"],
+    datos_usuarios["cookie"]["expiry_days"]
+)
+
+st.title("Nutribalance")
+
+if st.session_state["authentication_status"]:
+    authenticator.logout("Cerrar sesion", "sidebar", key="unique_key")
+
+footer = """
+<style>
+    .footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        z-index: 10;
+        width: 100%;
+        background-color: rgb(14, 17, 23);
+        color: black;
+        text-align: center;
     }
-  },
-  "cells": [
-    {
-      "cell_type": "markdown",
-      "metadata": {
-        "id": "view-in-github",
-        "colab_type": "text"
-      },
-      "source": [
-        "<a href=\"https://colab.research.google.com/github/lflunal/ppi_20/blob/main/Nutribalance.py\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
-      ]
-    },
-    {
-      "cell_type": "code",
-      "source": [
-        "#%%writefile app.py\n",
-        "import pandas as pd\n",
-        "\n",
-        "# Función para calcular el IMC\n",
-        "st.title(\"Calculadora de IMC\")\n",
-        "def calcular_imc(peso, altura):\n",
-        "    try:\n",
-        "      # Convertir la altura de cm a metros\n",
-        "        altura_metros = altura / 100\n",
-        "        imc = peso / (altura_metros ** 2)\n",
-        "        return imc\n",
-        "    except ZeroDivisionError:\n",
-        "        return \"La altura no puede ser cero.\"\n",
-        "\n",
-        "# Calcular las calorias diarias:\n",
-        "# Falta imprimirlo y nivel de actividad\n",
-        "def calcular_calorias_diarias(sexo, peso, altura, edad, nivel_actividad):\n",
-        "    if sexo == \"Masculino\":\n",
-        "        tmb = 88.362 + (13.397 * peso) + (4.799 * altura) - (5.677 * edad)\n",
-        "    elif sexo == \"Femenino\":\n",
-        "        tmb = 447.593 + (9.247 * peso) + (3.098 * altura) - (4.330 * edad)\n",
-        "\n",
-        "    if nivel_actividad == \"sedentario\":\n",
-        "        calorias_diarias = tmb * 1.2\n",
-        "    elif nivel_actividad == \"ligera_actividad\":\n",
-        "        calorias_diarias = tmb * 1.375\n",
-        "    elif nivel_actividad == \"moderada_actividad\":\n",
-        "        calorias_diarias = tmb * 1.55\n",
-        "    elif nivel_actividad == \"alta_actividad\":\n",
-        "        calorias_diarias = tmb * 1.725\n",
-        "    elif nivel_actividad == \"muy_alta_actividad\":\n",
-        "        calorias_diarias = tmb * 1.9\n",
-        "\n",
-        "\n",
-        "# Función para determinar la categoría de IMC\n",
-        "def determinar_categoria(imc):\n",
-        "    if imc < 18.5:\n",
-        "        return \"Bajo peso\"\n",
-        "    elif 18.5 <= imc < 24.9:\n",
-        "        return \"Peso normal\"\n",
-        "    elif 24.9 <= imc < 29.9:\n",
-        "        return \"Sobrepeso\"\n",
-        "    else:\n",
-        "        return \"Obesidad\"\n",
-        "\n",
-        "# Solicitar al usuario ingresar peso y altura\n",
-        "peso = st.number_input(\"Ingresa tu peso en kilogramos\", min_value=0.1)\n",
-        "altura = st.number_input(\"Ingresa tu altura en centímetros, \"\n",
-        "                         \"Sin puntos ni comas\", step=1)\n",
-        "edad = st.number_input (\" Ingrese su edad\", step=1)\n",
-        "\n",
-        "# Agregar un menú desplegable para seleccionar el sexo\n",
-        "sexo = st.selectbox(\"Selecciona tu sexo:\", [\"Masculino\", \"Femenino\"])\n",
-        "\n",
-        "# Verificar si el usuario ha ingresado valores válidos\n",
-        "if peso > 0 and altura > 0:\n",
-        "    # Calcular el IMC\n",
-        "    altura_metros = altura / 100\n",
-        "    imc = peso / (altura_metros ** 2)\n",
-        "\n",
-        "    # Determinar la categoría de IMC basada en el sexo\n",
-        "    if sexo == \"Masculino\":\n",
-        "        if isinstance(imc, str):\n",
-        "            st.write(imc)\n",
-        "        else:\n",
-        "            if imc < 18.5:\n",
-        "                categoria = \"Bajo peso\"\n",
-        "            elif 18.5 <= imc < 24.9:\n",
-        "                categoria = \"Peso normal\"\n",
-        "            elif 24.9 <= imc < 29.9:\n",
-        "                categoria = \"Sobrepeso\"\n",
-        "            else:\n",
-        "                categoria = \"Obesidad\"\n",
-        "            st.write(f\"Tu IMC es {imc:.2f}, lo que corresponde a la categoría de \"\n",
-        "         f\"{categoria} para hombres.\")\n",
-        "\n",
-        "\n",
-        "    elif sexo == \"Femenino\":\n",
-        "        if isinstance(imc, str):\n",
-        "            st.write(imc)\n",
-        "        else:\n",
-        "            if imc < 18.5:\n",
-        "                categoria = \"Bajo peso\"\n",
-        "            elif 18.5 <= imc < 24.9:\n",
-        "                categoria = \"Peso normal\"\n",
-        "            elif 24.9 <= imc < 29.9:\n",
-        "                categoria = \"Sobrepeso\"\n",
-        "            else:\n",
-        "                categoria = \"Obesidad\"\n",
-        "            st.write(f\"Tu IMC es {imc:.2f}, lo que corresponde a la categoría de \"\n",
-        "         f\"{categoria} para mujeres.\")\n",
-        "else:\n",
-        "    st.write(\"Por favor, ingresa valores válidos para peso y altura.\")\n",
-        "\n",
-        "objetivo = st.selectbox(\"Selecciona tu objetivo:\",\n",
-        "                       [\"Aumentar\", \"Mantenerse\", \"Bajar\"])\n",
-        "\n",
-        "\n",
-        "\n",
-        "#lectura de datos\n",
-        "url_foods = (\n",
-        "    \"https://docs.google.com/spreadsheets/d/e/\"\n",
-        "    \"2PACX-1vSOahgzh7JD0eqEEOE5DdXPqJci2D7ZH16nb8Ski1OcZkR448sOMPRE\"\n",
-        "    \"LuLLEG4EiNuNhWz5DpaAHf8E/pub?output=csv\"\n",
-        ")\n",
-        "\n",
-        "url_exercise = (\n",
-        "    \"https://docs.google.com/spreadsheets/d/e/\"\n",
-        "    \"2PACX-1vTXXom0c0qWSJIPrIQZo_0qGxSzoM0u_xe8Cijv1ZAY\"\n",
-        "    \"bP6EKshVAtvwVV2eh5Yj1Ueio8tzb7FEsV5j/pub?output=csv\"\n",
-        ")\n",
-        "\n",
-        "# Cargar el DataFrame desde la URL\n",
-        "df_foods = pd.read_csv(url_foods)\n",
-        "df_exercise=pd.read_csv(url_exercise)\n",
-        "\n",
-        "# Configuración de la aplicación Streamlit\n",
-        "st.title(\"Registro de Alimentos Consumidos en el Día\")\n",
-        "\n",
-        "# Mostrar el DataFrame en la página web\n",
-        "st.write(\"### Lista de Alimentos:\")\n",
-        "st.write(df_foods)\n",
-        "\n",
-        "# Elemento interactivo para que el usuario seleccione alimentos\n",
-        "alimento_seleccionado = st.selectbox(\n",
-        "    \"Selecciona un alimento:\", df_foods[\"Food\"]\n",
-        ")\n",
-        "\n",
-        "# Obtener los detalles del alimento seleccionado\n",
-        "detalles_alimento = df_foods[df_foods[\"Food\"] == alimento_seleccionado]\n",
-        "\n",
-        "if not detalles_alimento.empty:\n",
-        "    st.write(\"### Detalles del Alimento Seleccionado:\")\n",
-        "    st.write(detalles_alimento)\n",
-        "else:\n",
-        "    st.write(\"Selecciona un alimento de la lista.\")\n",
-        "\n",
-        "# Mostrar el dataframe\n",
-        "st.write(\"### Lista de ejercicios por hora:\")\n",
-        "st.write(df_exercise)\n",
-        "\n",
-        "# Elemento interactivo para que el usuario seleccione alimentos\n",
-        "ejercicio_seleccionado = st.selectbox(\n",
-        "    \"Selecciona un ejercicio:\",\n",
-        "    df_exercise[\"Activity, Exercise or Sport (1 hour)\"]\n",
-        ")\n",
-        "\n",
-        "# Obtener los detalles del alimento seleccionado\n",
-        "detalles_ejercicio = df_exercise[\n",
-        "    df_exercise[\"Activity, Exercise or Sport (1 hour)\"] == ejercicio_seleccionado\n",
-        "]\n",
-        "\n",
-        "if not detalles_ejercicio.empty:\n",
-        "    st.write(\"### Detalles del Ejercicio Seleccionado:\")\n",
-        "    st.write(detalles_ejercicio)\n",
-        "else:\n",
-        "    st.write(\"Selecciona un ejercicio de la lista.\")\n"
-      ],
-      "metadata": {
-        "id": "4mPcmQ3Wo1Wi"
-      },
-      "execution_count": null,
-      "outputs": []
+    .footer p {
+        color: white;
     }
-  ]
-}
+</style>
+<div class="footer">
+    <p>App desarrollada por: <br />
+    Luis Fernando López Echeverri | Andres Felipe Ramirez Suarez <br />
+    Contactenos: <a href="#">lulopeze@unal.edu.co</a> | <a href="#">aramirezsu@unal.edu.co</a></p>
+</div>
+"""
+st.markdown(footer,unsafe_allow_html=True)
+
+# Función para calcular el IMC
+st.title("Calculadora de IMC")
+def calcular_imc(peso, altura):
+    try:
+      # Convertir la altura de cm a metros
+        altura_metros = altura / 100
+        imc = peso / (altura_metros ** 2)
+        return imc
+    except ZeroDivisionError:
+        return "La altura no puede ser cero."
+
+# Calcular las calorias diarias:
+# Falta imprimirlo y nivel de actividad
+def calcular_calorias_diarias(sexo, peso, altura, edad, nivel_actividad):
+    if sexo == "Masculino":
+        tmb = 88.362 + (13.397 * peso) + (4.799 * altura) - (5.677 * edad)
+    elif sexo == "Femenino":
+        tmb = 447.593 + (9.247 * peso) + (3.098 * altura) - (4.330 * edad)
+
+    if nivel_actividad == "sedentario":
+        calorias_diarias = tmb * 1.2
+    elif nivel_actividad == "ligera_actividad":
+        calorias_diarias = tmb * 1.375
+    elif nivel_actividad == "moderada_actividad":
+        calorias_diarias = tmb * 1.55
+    elif nivel_actividad == "alta_actividad":
+        calorias_diarias = tmb * 1.725
+    elif nivel_actividad == "muy_alta_actividad":
+        calorias_diarias = tmb * 1.9
+
+
+# Función para determinar la categoría de IMC
+def determinar_categoria(imc):
+    if imc < 18.5:
+        return "Bajo peso"
+    elif 18.5 <= imc < 24.9:
+        return "Peso normal"
+    elif 24.9 <= imc < 29.9:
+        return "Sobrepeso"
+    else:
+        return "Obesidad"
+
+# Solicitar al usuario ingresar peso y altura
+peso = st.number_input("Ingresa tu peso en kilogramos", min_value=0.1)
+altura = st.number_input("Ingresa tu altura en centímetros, "
+                         "Sin puntos ni comas", step=1)
+edad = st.number_input (" Ingrese su edad", step=1)
+
+# Agregar un menú desplegable para seleccionar el sexo
+sexo = st.selectbox("Selecciona tu sexo:", ["Masculino", "Femenino"])
+
+# Verificar si el usuario ha ingresado valores válidos
+if peso > 0 and altura > 0:
+    # Calcular el IMC
+    altura_metros = altura / 100
+    imc = peso / (altura_metros ** 2)
+
+    # Determinar la categoría de IMC basada en el sexo
+    if sexo == "Masculino":
+        if isinstance(imc, str):
+            st.write(imc)
+        else:
+            if imc < 18.5:
+                categoria = "Bajo peso"
+            elif 18.5 <= imc < 24.9:
+                categoria = "Peso normal"
+            elif 24.9 <= imc < 29.9:
+                categoria = "Sobrepeso"
+            else:
+                categoria = "Obesidad"
+            st.write(f"Tu IMC es {imc:.2f}, lo que corresponde a la categoría de "
+         f"{categoria} para hombres.")
+
+
+    elif sexo == "Femenino":
+        if isinstance(imc, str):
+            st.write(imc)
+        else:
+            if imc < 18.5:
+                categoria = "Bajo peso"
+            elif 18.5 <= imc < 24.9:
+                categoria = "Peso normal"
+            elif 24.9 <= imc < 29.9:
+                categoria = "Sobrepeso"
+            else:
+                categoria = "Obesidad"
+            st.write(f"Tu IMC es {imc:.2f}, lo que corresponde a la categoría de "
+         f"{categoria} para mujeres.")
+else:
+    st.write("Por favor, ingresa valores válidos para peso y altura.")
+
+objetivo = st.selectbox("Selecciona tu objetivo:",
+                       ["Aumentar", "Mantenerse", "Bajar"])
+
+
+
+#lectura de datos
+url_foods = (
+    "https://docs.google.com/spreadsheets/d/e/"
+    "2PACX-1vSOahgzh7JD0eqEEOE5DdXPqJci2D7ZH16nb8Ski1OcZkR448sOMPRE"
+    "LuLLEG4EiNuNhWz5DpaAHf8E/pub?output=csv"
+)
+
+url_exercise = (
+    "https://docs.google.com/spreadsheets/d/e/"
+    "2PACX-1vTXXom0c0qWSJIPrIQZo_0qGxSzoM0u_xe8Cijv1ZAY"
+    "bP6EKshVAtvwVV2eh5Yj1Ueio8tzb7FEsV5j/pub?output=csv"
+)
+
+# Cargar el DataFrame desde la URL
+df_foods = pd.read_csv(url_foods)
+df_exercise=pd.read_csv(url_exercise)
+
+# Configuración de la aplicación Streamlit
+st.title("Registro de Alimentos Consumidos en el Día")
+
+# Mostrar el DataFrame en la página web
+st.write("### Lista de Alimentos:")
+st.write(df_foods)
+
+# Elemento interactivo para que el usuario seleccione alimentos
+alimento_seleccionado = st.selectbox(
+    "Selecciona un alimento:", df_foods["Food"]
+)
+
+# Obtener los detalles del alimento seleccionado
+detalles_alimento = df_foods[df_foods["Food"] == alimento_seleccionado]
+
+if not detalles_alimento.empty:
+    st.write("### Detalles del Alimento Seleccionado:")
+    st.write(detalles_alimento)
+else:
+    st.write("Selecciona un alimento de la lista.")
+
+# Mostrar el dataframe
+st.write("### Lista de ejercicios por hora:")
+st.write(df_exercise)
+
+# Elemento interactivo para que el usuario seleccione alimentos
+ejercicio_seleccionado = st.selectbox(
+    "Selecciona un ejercicio:",
+    df_exercise["Activity, Exercise or Sport (1 hour)"]
+)
+
+# Obtener los detalles del alimento seleccionado
+detalles_ejercicio = df_exercise[
+    df_exercise["Activity, Exercise or Sport (1 hour)"] == ejercicio_seleccionado
+]
+
+if not detalles_ejercicio.empty:
+    st.write("### Detalles del Ejercicio Seleccionado:")
+    st.write(detalles_ejercicio)
+else:
+    st.write("Selecciona un ejercicio de la lista.")
