@@ -72,20 +72,26 @@ def validar_username(username):
         return True
     return False
 
+# Manejo de posibles errores
 try:
+    # Se almacenan los datos necesarios de la DB
     users = fetch_usuarios()
     emails = get_emails_usuarios()
     usernames = get_usernames_usuarios()
     passwords = [user["password"] for user in users]
 
+    # Se crea el diccionario credentials necesario para el funcionamiento del autenticador de cuentas
     credentials = {"usernames" : {}}
     for index in range(len(emails)):
         credentials["usernames"][usernames[index]] = {"name" : emails[index], "password" : passwords[index]}
-    
+
+    # Creacion del autenticador
     Authenticator = stauth.Authenticate(credentials, cookie_name="Streamlit", key="cookiekey", cookie_expiry_days=3)
 
+    # La funcion login regresa una tupla con estos 3 valores los cuales atrapamos
     email, authentication_status, username = Authenticator.login("Ingresar", "main")
 
+    # Comprobacion de la existencia del username dentro de la DB y mensajes de advertencia en caso de un mal inicio de sesion
     if username:
         if username in usernames:
             if authentication_status:
@@ -98,7 +104,7 @@ try:
         else:
             st.warning("Nombre de usuario no existe, por favor registrese")
 
-
+# Informar de que hubo una excepcion en caso de que la haya
 except:
     st.error("Excepcion lanzada")
 

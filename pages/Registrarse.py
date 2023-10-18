@@ -72,8 +72,13 @@ def validar_username(username):
 
 # Formulario de registro con los datos que debe ingresar el usuario
 def registro():
+    """Formulario de registro que guarda un registro de usuario en la DB si este es valido"""
+    # Creacion del formulario
     with st.form(key="registro", clear_on_submit=True):
+        # Titulo del formulario
         st.subheader("Registrarse")
+
+        # Campos a ser llenados por el usuario
         email = st.text_input("Email", placeholder="Ingrese su Email")
         username = st.text_input("Usuario", placeholder="Ingrese su nombre de usuario")
         age = st.text_input("Edad (en años)", placeholder="Ingrese su edad en años")
@@ -100,27 +105,35 @@ def registro():
         else:
             st.warning("Debe rellenar todos los campos")
         
+        # Boton de envio de datos de registro
         st.form_submit_button("Registrate")
 
+# Manejo de posibles errores
 try:
+    # Se almacenan los datos necesarios de la DB
     users = fetch_usuarios()
     emails = get_emails_usuarios()
     usernames = get_usernames_usuarios()
     passwords = [user["password"] for user in users]
 
+    # Se crea el diccionario credentials necesario para el funcionamiento del autenticador de cuentas
     credentials = {"usernames" : {}}
     for index in range(len(emails)):
         credentials["usernames"][usernames[index]] = {"name" : emails[index], "password" : passwords[index]}
 
+    # Creacion del autenticador
     Authenticator = stauth.Authenticate(credentials, cookie_name="Streamlit", key="cookiekey", cookie_expiry_days=3)
 
+    # Crear boton de Cerrar sesion si la sesion fue iniciada
     if st.session_state["authentication_status"]:
         Authenticator.logout("Cerrar sesion", location="sidebar")
         st.write("Ya ha iniciado sesion")
 
+    # Si la sesion no fue iniciada, ejecutar el formulario de registro
     else:
         registro()
 
+# Informar de que hubo una excepcion en caso de que la haya
 except:
     st.error("Excepcion lanzada")
 
