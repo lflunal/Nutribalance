@@ -263,6 +263,17 @@ calorias_diarias = calcular_calorias_diarias(sexo, peso, altura, edad, nivel_act
 # Mostrar el resultado
 st.write(f"Calorías necesarias en un día: {int(calorias_diarias)} calorías")
 
+=======
+
+# Mostrar las horas de sueño
+st.write(f"Dormiste durante {horas_sueno} horas")
+
+# Llamada a la función y almacenar el resultado
+calorias_diarias = calcular_calorias_diarias(sexo, peso, altura, edad, nivel_actividad)
+
+# Mostrar el resultado
+st.write(f"Calorías necesarias en un día: {int(calorias_diarias)} calorías")
+
 # Lectura de datos
 url_foods = (
     "https://docs.google.com/spreadsheets/d/e/"
@@ -277,13 +288,17 @@ url_exercise = (
 )
 
 # Cargar el DataFrame desde la URL
-df_foods = pd.read_csv(url_foods)
+df_foods_base = pd.read_csv(url_foods)
 df_exercise=pd.read_csv(url_exercise)
 
 # Eliminar comas y convertir a enteros en el DataFrame food
 columns_to_clean = ["Calories"]
 
 for column in columns_to_clean:
+    df_foods_base[column] = df_foods_base[column]\
+        .str.replace(' cal', '', regex=True)
+    df_foods_base[column] = df_foods_base[column].astype(int)
+=======
     df_foods[column] = df_foods[column]\
         .str.replace(' cal', '', regex=True)
     df_foods[column] = df_foods[column].astype(int)
@@ -297,7 +312,23 @@ for elements in columnas_to_clean:
 # Configuración de la aplicación Streamlit
 st.title("Registro de Alimentos Consumidos en el Día")
 
-# Mostrar el DataFrame en la página web
+# Seleccionar posibles alergias o disgustos de algun alimento
+alergias_seleccionadas = st.multiselect(
+    "Selecciona los alimentos que no desea incluir:",
+    df_foods_base["Food"]
+)
+
+
+# Inicializa una variable para realizar el seguimiento del total de calorías
+total_calorias_consumidas = 0
+
+# Guardamos inicialmente todos los alimentos en df_foods
+df_foods = df_foods_base
+
+# Ocultar del dataframe los elementos seleccionados
+for alergia in alergias_seleccionadas:
+    df_foods = df_foods[df_foods["Food"] != alergia]
+
 st.write("### Lista de Alimentos:")
 st.write(df_foods)
 
@@ -307,6 +338,16 @@ alimentos_seleccionados = st.multiselect(
     df_foods["Food"]
 )
 
+# Obtener los detalles de los alimentos seleccionados
+for alimento_seleccionado in alimentos_seleccionados:
+    detalles_alimento = df_foods[df_foods["Food"] == alimento_seleccionado]
+    if not detalles_alimento.empty:
+        st.write(f"### Detalles del Alimento Seleccionado ({alimento_seleccionado}):")
+        calorias_alimento = detalles_alimento["Calories"].values[0]
+        total_calorias_consumidas += calorias_alimento
+        st.write(detalles_alimento)
+
+=======
 # Inicializa una variable para realizar el seguimiento del total de calorías
 total_calorias_consumidas = 0
 
