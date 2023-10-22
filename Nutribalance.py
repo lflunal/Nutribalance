@@ -296,7 +296,7 @@ for column in columns_to_clean:
     df_foods_base[column] = df_foods_base[column]\
         .str.replace(' cal', '', regex=True)
     df_foods_base[column] = df_foods_base[column].astype(int)
-=======
+
     df_foods[column] = df_foods[column]\
         .str.replace(' cal', '', regex=True)
     df_foods[column] = df_foods[column].astype(int)
@@ -345,7 +345,6 @@ for alimento_seleccionado in alimentos_seleccionados:
         total_calorias_consumidas += calorias_alimento
         st.write(detalles_alimento)
 
-=======
 # Inicializa una variable para realizar el seguimiento del total de calorías
 total_calorias_consumidas = 0
 
