@@ -263,6 +263,8 @@ calorias_diarias = calcular_calorias_diarias(sexo, peso, altura, edad, nivel_act
 # Mostrar el resultado
 st.write(f"Calorías necesarias en un día: {int(calorias_diarias)} calorías")
 
+=======
+
 # Mostrar las horas de sueño
 st.write(f"Dormiste durante {horas_sueno} horas")
 
