@@ -263,15 +263,6 @@ calorias_diarias = calcular_calorias_diarias(sexo, peso, altura, edad, nivel_act
 # Mostrar el resultado
 st.write(f"Calorías necesarias en un día: {int(calorias_diarias)} calorías")
 
-# Mostrar las horas de sueño
-st.write(f"Dormiste durante {horas_sueno} horas")
-
-# Llamada a la función y almacenar el resultado
-calorias_diarias = calcular_calorias_diarias(sexo, peso, altura, edad, nivel_actividad)
-
-# Mostrar el resultado
-st.write(f"Calorías necesarias en un día: {int(calorias_diarias)} calorías")
-
 # Lectura de datos
 url_foods = (
     "https://docs.google.com/spreadsheets/d/e/"
@@ -296,10 +287,6 @@ for column in columns_to_clean:
     df_foods_base[column] = df_foods_base[column]\
         .str.replace(' cal', '', regex=True)
     df_foods_base[column] = df_foods_base[column].astype(int)
-
-    df_foods[column] = df_foods[column]\
-        .str.replace(' cal', '', regex=True)
-    df_foods[column] = df_foods[column].astype(int)
 
 # Convertir a enteros en el DataFrame food
 columnas_to_clean = ["130 lb", "155 lb", "180 lb", "205 lb"]
@@ -335,18 +322,6 @@ alimentos_seleccionados = st.multiselect(
     "Selecciona los alimentos que has consumido:",
     df_foods["Food"]
 )
-
-# Obtener los detalles de los alimentos seleccionados
-for alimento_seleccionado in alimentos_seleccionados:
-    detalles_alimento = df_foods[df_foods["Food"] == alimento_seleccionado]
-    if not detalles_alimento.empty:
-        st.write(f"### Detalles del Alimento Seleccionado ({alimento_seleccionado}):")
-        calorias_alimento = detalles_alimento["Calories"].values[0]
-        total_calorias_consumidas += calorias_alimento
-        st.write(detalles_alimento)
-
-# Inicializa una variable para realizar el seguimiento del total de calorías
-total_calorias_consumidas = 0
 
 # Obtener los detalles de los alimentos seleccionados
 for alimento_seleccionado in alimentos_seleccionados:
