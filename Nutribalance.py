@@ -1,5 +1,4 @@
-#%%writefile app.py
-# Pagina prinipal de la app Nutribalance
+
 
 # Importar librerias
 import pandas as pd
@@ -129,18 +128,16 @@ footer = """
 st.markdown(footer,unsafe_allow_html=True)
 
 # Función para calcular el IMC
-st.title("Calculadora de IMC")
 def calcular_imc(peso, altura):
     try:
-      # Convertir la altura de cm a metros
+        # Convertir la altura de cm a metros
         altura_metros = altura / 100
         imc = peso / (altura_metros ** 2)
         return imc
     except ZeroDivisionError:
         return "La altura no puede ser cero."
 
-# Calcular las calorias diarias:
-# Falta imprimirlo y nivel de actividad
+# Calcular las calorías necesarias diarias
 def calcular_calorias_diarias(sexo, peso, altura, edad, nivel_actividad):
     if sexo == "Masculino":
         tmb = 88.362 + (13.397 * peso) + (4.799 * altura) - (5.677 * edad)
@@ -158,7 +155,6 @@ def calcular_calorias_diarias(sexo, peso, altura, edad, nivel_actividad):
     elif nivel_actividad == "muy_alta_actividad":
         calorias_diarias = tmb * 1.9
 
-
 # Función para determinar la categoría de IMC
 def determinar_categoria(imc):
     if imc < 18.5:
@@ -170,6 +166,21 @@ def determinar_categoria(imc):
     else:
         return "Obesidad"
 
+# Función para calcular horas de sueño
+def calcular_horas_de_sueno(hora_sueno, hora_despertar):
+    # Obtener las horas de sueño y despertar
+    hora_sueno_horas = hora_sueno.hour
+    hora_despertar_horas = hora_despertar.hour
+
+    # Calcular la diferencia de horas
+    horas_sueno = hora_despertar_horas - hora_sueno_horas
+
+    # Manejar el caso en el que la hora de despertar sea anterior a la hora de dormir (cruce de medianoche)
+    if horas_sueno < 0:
+        horas_sueno += 24
+
+    return horas_sueno
+
 # Solicitar al usuario ingresar peso y altura
 peso = st.number_input("Ingresa tu peso en kilogramos", min_value=0.1)
 altura = st.number_input("Ingresa tu altura en centímetros, "
@@ -178,6 +189,19 @@ edad = st.number_input (" Ingrese su edad", step=1)
 
 # Agregar un menú desplegable para seleccionar el sexo
 sexo = st.selectbox("Selecciona tu sexo:", ["Masculino", "Femenino"])
+
+# Solicitar al usuario hora de sueño y hora de despertar
+hora_sueno = st.time_input("Ingresa la hora en que te dormiste")
+hora_despertar = st.time_input("Ingresa la hora en que te despertaste")
+
+# Agregar un menú desplegable para seleccionar el nivel de actividad física
+nivel_actividad = st.selectbox("Selecciona tu nivel de actividad física:", [
+    "Sedentario",
+    "Ligera actividad",
+    "Moderada actividad",
+    "Alta actividad",
+    "Muy alta actividad"
+])
 
 # Verificar si el usuario ha ingresado valores válidos
 if peso > 0 and altura > 0:
@@ -220,8 +244,22 @@ else:
     st.write("Por favor, ingresa valores válidos para peso y altura.")
 
 objetivo = st.selectbox("Selecciona tu objetivo:",
-                       ["Aumentar", "Mantenerse", "Bajar"])
+                       ["Aumentar masa muscular", "Mantenerse", "Bajar grasa"])
 
+# Crear un botón para realizar el cálculo
+st.button("CALCULAR")
+
+# Mostrar tiempo de sueño
+# Calcular las horas de sueño
+horas_sueno = calcular_horas_de_sueno(hora_sueno, hora_despertar)
+
+# Mostrar las horas de sueño
+st.write(f"Dormiste durante {horas_sueno} horas")
+
+
+
+# Mostrar calorias necesarias en un dia
+calorias_necesarias = calcular_calorias_diarias(sexo, peso, altura, edad, nivel_actividad)
 
 
 #lectura de datos
@@ -230,6 +268,7 @@ url_foods = (
     "2PACX-1vSOahgzh7JD0eqEEOE5DdXPqJci2D7ZH16nb8Ski1OcZkR448sOMPRE"
     "LuLLEG4EiNuNhWz5DpaAHf8E/pub?output=csv"
 )
+
 
 url_exercise = (
     "https://docs.google.com/spreadsheets/d/e/"
@@ -241,6 +280,23 @@ url_exercise = (
 df_foods = pd.read_csv(url_foods)
 df_exercise=pd.read_csv(url_exercise)
 
+# Eliminar comas y convertir a enteros en el DataFrame food
+columns_to_clean = ["Calories"]
+
+for column in columns_to_clean:
+    df_foods[column] = df_foods[column]\
+        .str.replace(' cal', '', regex=True)
+    df_foods[column] = df_foods[column].astype(int)
+
+# Convertir a enteros en el DataFrame food
+columnas_to_clean = ["130 lb", "155 lb", "180 lb", "205 lb"]
+
+for elements in columnas_to_clean:
+    #df_exercise[elements] = df_exercise[elements]\
+   #     .str.replace(',', '', regex=True)
+    df_exercise[elements] = df_exercise[elements].astype(int)
+
+
 # Configuración de la aplicación Streamlit
 st.title("Registro de Alimentos Consumidos en el Día")
 
@@ -248,19 +304,34 @@ st.title("Registro de Alimentos Consumidos en el Día")
 st.write("### Lista de Alimentos:")
 st.write(df_foods)
 
-# Elemento interactivo para que el usuario seleccione alimentos
-alimento_seleccionado = st.selectbox(
-    "Selecciona un alimento:", df_foods["Food"]
+
+alimentos_seleccionados = st.multiselect(
+    "Selecciona los alimentos que has consumido:",
+    df_foods["Food"]
 )
 
-# Obtener los detalles del alimento seleccionado
-detalles_alimento = df_foods[df_foods["Food"] == alimento_seleccionado]
 
-if not detalles_alimento.empty:
-    st.write("### Detalles del Alimento Seleccionado:")
-    st.write(detalles_alimento)
-else:
-    st.write("Selecciona un alimento de la lista.")
+
+# Inicializa una variable para realizar el seguimiento del total de calorías
+total_calorias = 0
+
+
+
+# Obtener los detalles de los alimentos seleccionados
+for alimento_seleccionado in alimentos_seleccionados:
+    detalles_alimento = df_foods[df_foods["Food"] == alimento_seleccionado]
+    if not detalles_alimento.empty:
+        st.write(f"### Detalles del Alimento Seleccionado ({alimento_seleccionado}):")
+        calorias_alimento = detalles_alimento["Calories"].values[0]
+        total_calorias += calorias_alimento
+        st.write(detalles_alimento)
+
+    else:
+        st.write(f"Selecciona un alimento de la lista o verifica la ortografía.")
+
+# Mostrar el total de calorías
+st.write(f"Total de calorías consumidas: {total_calorias} calorías")
+
 
 # Mostrar el dataframe
 st.write("### Lista de ejercicios por hora:")
@@ -277,8 +348,32 @@ detalles_ejercicio = df_exercise[
     df_exercise["Activity, Exercise or Sport (1 hour)"] == ejercicio_seleccionado
 ]
 
+
+
 if not detalles_ejercicio.empty:
     st.write("### Detalles del Ejercicio Seleccionado:")
     st.write(detalles_ejercicio)
 else:
     st.write("Selecciona un ejercicio de la lista.")
+
+# Inicializa una variable para realizar el seguimiento del total de calorías quemadas
+total_calorias_quemadas = 0
+
+ejercicios_seleccionados = st.multiselect(
+    "Selecciona los ejercicios que has realizado:",
+    df_exercise["Activity, Exercise or Sport (1 hour)"]
+)
+
+# Obtener los detalles de los ejercicios seleccionados y sumar las calorías
+for ejercicio_seleccionado in ejercicios_seleccionados:
+    detalles_ejercicio = df_exercise[df_exercise["Activity, Exercise or Sport (1 hour)"] == ejercicio_seleccionado]
+
+    if not detalles_ejercicio.empty and "130 lb" in detalles_ejercicio.columns:
+        calorias_ejercicio = detalles_ejercicio["130 lb"].values[0]
+        total_calorias_quemadas += calorias_ejercicio
+        st.write(f"Detalles del Ejercicio Seleccionado ({ejercicio_seleccionado}):")
+        st.write(detalles_ejercicio)
+        st.write(f"Calorías quemadas:{calorias_ejercicio}")
+
+# Mostrar el total de calorías quemadas
+st.write(f"Total de calorías quemadas: {total_calorias_quemadas}")
