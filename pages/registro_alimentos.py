@@ -15,6 +15,7 @@ import requests
 import re
 import streamlit_authenticator as stauth
 from deta import Deta
+from datetime import date
 
 # Almacenamos la key de la base de datos en una constante
 DETA_KEY = "e0qgr2zg4tq_mbZWcCg7iGCpWFBbCy3GGFjEYHdFmZYR"
@@ -76,13 +77,45 @@ def validar_username(username):
         return True
     return False
 
-def add_food(email, foods):
+# Funcion para agregar valores caloricos a la DB registrados en un dia
+def add_food(email, new_food_data):
+    """
+    Agrega una comida al día o actualiza una existente si la fecha ya está registrada.
+    """
+    user = db.get(email)
+    date = new_food_data[0]
+    calories = new_food_data[1]
+
+    # Convierte la fecha en una cadena en formato ISO
+    date_iso = date.isoformat()
+
+    # Verifica si la fecha ya existe en la lista de comidas
+    food_updated = False
+    for food in user["food"]:
+        if food[0] == date_iso:
+            # La fecha ya existe, actualiza las calorías en lugar de agregar una nueva entrada
+            food[1] = calories
+            food_updated = True
+            break  # Termina el bucle si la fecha coincide
+
+    # Si no se actualizó, agrega una nueva entrada
+    if not food_updated:
+        user["food"].append([date_iso, calories])
+
+    # Actualiza el usuario en la base de datos
+    db.put(user)
+
+def update_food(email, value, date):
+    """
+    Actualiza la comida del dia de en caso de que se vuelvan a enviar
+    datos de un dia ya registrado en la base de datos
+    """
     user = db.get(email)
 
-    if "food" in user:
-        user["food"].extend([foods])
-    else:
-        user["food"] = [foods]
+    for food in user["food"]:
+        if food[0] == date:
+            food[1] = value
+            break
     
     db.put(user)
 
@@ -199,15 +232,21 @@ for alimento_seleccionado in alimentos_seleccionados:
     detalles_alimento = df_foods[df_foods["Food"] == alimento_seleccionado]
     if not detalles_alimento.empty:
         st.write(f"### Detalles del Alimento Seleccionado ({alimento_seleccionado}):")
-        calorias_alimento = detalles_alimento["Calories"].values[0]
+
+         # Genera una clave única para el widget number_input
+        widget_key = f"number_input_{alimento_seleccionado}"
+
+        # Utiliza la clave única en el number_input
+        cantidad = st.number_input("Cantidad de porciones consumidas", value=1, key=widget_key)
+        calorias_alimento = detalles_alimento["Calories"].values[0] * cantidad
         total_calorias_consumidas += calorias_alimento
-        carbohidratos_alimento = detalles_alimento["Carbs"].values[0]
+        carbohidratos_alimento = detalles_alimento["Carbs"].values[0] * cantidad
         total_carbohidratos_consumidas += carbohidratos_alimento
-        proteina_alimento = detalles_alimento["Protein"].values[0]
+        proteina_alimento = detalles_alimento["Protein"].values[0] * cantidad
         total_proteinas_consumidas += proteina_alimento
-        grasas_saturadas_alimento = detalles_alimento["Sat.Fat"].values[0]
+        grasas_saturadas_alimento = detalles_alimento["Sat.Fat"].values[0] * cantidad
         total_grasa_saturada_consumidas += grasas_saturadas_alimento
-        fibra_alimento = detalles_alimento["Fiber"].values[0]
+        fibra_alimento = detalles_alimento["Fiber"].values[0] * cantidad
         total_fibra_consumida_consumidas += fibra_alimento
         st.write(detalles_alimento)
 
@@ -221,11 +260,13 @@ st.write(f"Total de grasas saturadas consumida: {total_grasa_saturada_consumidas
 st.write(f"Total de fibra consumida: {total_fibra_consumida_consumidas} ")
 st.write(f"Total de proteina consumida: {total_proteinas_consumidas} ")
 
+# Se almacena el valor de las calorias al clickear el boton
 boton_almacenar = st.button("Almacenar calorias")
 
 if boton_almacenar:
     if st.session_state["authentication_status"]:
-        add_food(email, ["fecha", int(total_calorias_consumidas)])
+        fecha = date.today()
+        add_food(email, [fecha, float(total_calorias_consumidas)])
         st.success("Datos almacenados")
     else:
         st.warning("Para almacenar los datos primero debe iniciar sesion o registrarse")

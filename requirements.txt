@@ -3,3 +3,4 @@ streamlit-authenticator
 streamlit-extras
 deta
 streamlit-lottie
+datetime
