@@ -17,7 +17,7 @@ db = deta.Base("NutribalanceUsers")
 # Funcion para registrar usuarios en la DB
 def insertar_usuario(email, username, age, height, password):
     """Agrega usuarios a la Base de Datos"""
-    return db.put({"key":email, "username": username, "age":age, "height":height, "password":password})
+    return db.put({"key":email, "username": username, "age":age, "height":height, "password":password, "food":[]})
 
 # Funcion que retorna los usuarios registrados
 def fetch_usuarios():
@@ -73,6 +73,12 @@ def validar_username(username):
 # Formulario de registro con los datos que debe ingresar el usuario
 def registro():
     """Formulario de registro que guarda un registro de usuario en la DB si este es valido"""
+
+    # Se define un checkbox en el que se deben aceptar los T&C antes de enviar un registro
+    st.write("Debe aceptar los terminos y condiciones antes de poder enviar el formulario")
+    aceptar_terminos = st.checkbox("Acepto los [Términos y Condiciones](https://github.com/\
+lflunal/ppi_20/blob/Luis-Lopez/Politica%20de%20Tratamiento%20de%20Datos.md)")
+
     # Creacion del formulario
     with st.form(key="registro", clear_on_submit=True):
         # Titulo del formulario
@@ -84,6 +90,13 @@ def registro():
         age = st.text_input("Edad (en años)", placeholder="Ingrese su edad en años")
         height = st.text_input("Altura (en cm sin puntos ni comas)", placeholder="Ingrese su estatura en cm sin puntos ni comas")
         password = st.text_input("Contraseña", placeholder="Ingrese su contraseña", type="password")
+
+            # Si se aceptan los términos y condiciones, habilitar el botón de envío
+        if aceptar_terminos:
+            # Boton de envio de datos de registro
+            st.form_submit_button("Registrate")
+        else:
+            st.warning("Debes aceptar los términos y condiciones antes de enviar el formulario")
 
         # Revisar validez de los datos ingresados por el usuario y registro a la DB
         if email and username and age and height and password:
@@ -104,9 +117,6 @@ def registro():
                 st.warning("Email invalido")
         else:
             st.warning("Debe rellenar todos los campos")
-        
-        # Boton de envio de datos de registro
-        st.form_submit_button("Registrate")
 
 # Manejo de posibles errores
 try:
