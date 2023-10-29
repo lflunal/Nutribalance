@@ -247,7 +247,7 @@ nivel_actividad = st.selectbox("Selecciona tu nivel de actividad física:", [
 ])
 
 objetivo = st.selectbox("Selecciona tu objetivo:",
-                       ["Aumentar masa muscular", "Mantenerse", "Bajar grasa"])
+                       ["Aumentar masa muscular", "Mantenerse en un peso", "Bajar de peso"])
 
 # Mostrar y calcular tiempo de sueño
 horas_sueno = calcular_horas_de_sueno(hora_sueno, hora_despertar)
@@ -259,7 +259,10 @@ st.write("### Calculadora de Calorías: ")
 # Llamar a la función con los valores adecuados
 # Crear un botón para realizar el cálculo
 boton_calcular = st.button("CALCULAR")
+
+# Verifica si el usuario presiona el boton
 if boton_calcular:
+    # Verifica si el usuario inicio sesion
     if st.session_state["authentication_status"]:
         # Verificar si el usuario ha ingresado valores válidos
         if peso > 0 and altura > 0:
