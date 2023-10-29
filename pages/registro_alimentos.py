@@ -10,6 +10,9 @@ Original file is located at
 # Importar librerias
 import pandas as pd
 import streamlit as st
+from streamlit_lottie import st_lottie
+import requests
+
 # Crear pie de pagina con los datos de contacto de los creadores
 footer = """
 <style>
@@ -119,3 +122,17 @@ st.write(f"Total de carbohidratos consumidos: {total_carbohidratos_consumidas} "
 st.write(f"Total de grasas saturadas consumida: {total_grasa_saturada_consumidas} ")
 st.write(f"Total de fibra consumida: {total_fibra_consumida_consumidas} ")
 st.write(f"Total de proteina consumida: {total_proteinas_consumidas} ")
+
+# Funcion para cargar las animaciones
+def load_lottieurl(url):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
+
+# URL de animacion #1
+lottie_peso = load_lottieurl("https://raw.githubusercontent.com/lflunal/"
+"ppi_20/main/animaciones/peso.json")
+
+# Mostrar animacion #1
+st_lottie(lottie_peso, height = 180, key="peso")

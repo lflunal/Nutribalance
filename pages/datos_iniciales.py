@@ -14,6 +14,9 @@ import streamlit as st
 #import streamlit_authenticator as stauth
 #import re
 #from deta import Deta
+from streamlit_lottie import st_lottie
+import requests
+
 # Crear pie de pagina con los datos de contacto de los creadores
 footer = """
 <style>
@@ -39,7 +42,67 @@ footer = """
 """
 st.markdown(footer,unsafe_allow_html=True)
 
+# Titulo de la seccion
+st.title("Datos iniciales")
 
+# Funcion para cargar las animaciones
+def load_lottieurl(url):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
+
+# URL de animacion #1
+lottie_mancuerna= load_lottieurl("https://raw.githubusercontent.com/lflunal"
+                                 "/ppi_20/main/animaciones/mancuernas.json")
+
+# Mostrar animacion #1
+st_lottie(lottie_mancuerna, height = 180, key="mancuerna")
+
+def calcular_horas_de_sueno(hora_sueno, hora_despertar):
+    # Obtener las horas de sueño y despertar
+    hora_sueno_horas = hora_sueno.hour
+    hora_despertar_horas = hora_despertar.hour
+
+    # Calcular la diferencia de horas
+    horas_sueno = hora_despertar_horas - hora_sueno_horas
+
+    # Manejar el caso en el que la hora de despertar,
+    # sea anterior a la hora de dormir (cruce de medianoche)
+    if horas_sueno < 0:
+        horas_sueno += 24
+
+    return horas_sueno
+
+# Calcular las calorías necesarias diarias
+def calcular_calorias_diarias(sexo, peso, altura, edad, nivel_actividad):
+    calorias_diarias = 0  # Inicializar la variable con un valor predeterminado
+
+    if sexo == "Masculino":
+        tmb = 88.362 + (13.397 * peso) + (4.799 * altura) - (5.677 * edad)
+    elif sexo == "Femenino":
+        tmb = 447.593 + (9.247 * peso) + (3.098 * altura) - (4.330 * edad)
+
+    if nivel_actividad == "Sedentario":
+        calorias_diarias = tmb * 1.2
+    elif nivel_actividad == "Ligera actividad":
+        calorias_diarias = tmb * 1.375
+    elif nivel_actividad == "Moderada actividad":
+        calorias_diarias = tmb * 1.55
+    elif nivel_actividad == "Alta actividad":
+        calorias_diarias = tmb * 1.725
+    elif nivel_actividad == "Muy alta actividad":
+        calorias_diarias = tmb * 1.9
+
+    return calorias_diarias
+
+# Variable para mostrar diferencia de calorias en base a consumidas - gastadas
+def mostrar_diferencia_calorias(total_calorias_consumidas, total_calorias_quemadas, calorias_diarias):
+    diferencia_calorias = calorias_diarias - (total_calorias_consumidas - total_calorias_quemadas)
+    if diferencia_calorias > 0:
+        st.write(f"Has consumido {int(diferencia_calorias)} calorías en exceso hoy. Considera ajustar tu ingesta calórica.")
+    elif diferencia_calorias < 0:
+        st.write(f"Te faltan {int(abs(diferencia_calorias))} calorías para alcanzar tu ingesta calórica diaria. ¡Asegúrate de comer lo suficiente!")
 
 # Solicitar al usuario ingresar peso y altura
 peso = st.number_input("Ingresa tu peso en kilogramos", min_value=0.1)
@@ -124,4 +187,4 @@ st.write("### Calculadora de Calorías: ")
 # Crear un botón para realizar el cálculo
 st.button("CALCULAR")
 
-mostrar_diferencia_calorias(calorias_diarias, total_calorias_quemadas, total_calorias_consumidas)
+#mostrar_diferencia_calorias(calorias_diarias, total_calorias_quemadas, total_calorias_consumidas)

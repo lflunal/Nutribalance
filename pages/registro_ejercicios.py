@@ -10,6 +10,9 @@ Original file is located at
 # Importar librerias
 import pandas as pd
 import streamlit as st
+from streamlit_lottie import st_lottie
+import requests
+
 # Crear pie de pagina con los datos de contacto de los creadores
 footer = """
 <style>
@@ -34,6 +37,9 @@ footer = """
 </div>
 """
 st.markdown(footer,unsafe_allow_html=True)
+
+# Titulo de la seccion
+st.title("Registro de ejercicios realizados")
 
 url_exercise = (
     "https://docs.google.com/spreadsheets/d/e/"
@@ -94,3 +100,17 @@ for ejercicio_seleccionado in ejercicios_seleccionados:
 
 # Mostrar el total de calorías quemadas
 st.write(f"Total de calorías quemadas: {total_calorias_quemadas}")
+
+# Funcion para cargar las animaciones
+def load_lottieurl(url):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
+
+# URL de animacion #1
+lottie_ejercicio_sumo = load_lottieurl("https://raw.githubusercontent.com/"
+ "lflunal/ppi_20/main/animaciones/ejercicio%20%22sumo%22")
+
+# Mostrar animacion #1
+st_lottie(lottie_ejercicio_sumo, height = 180, key="sumo")
