@@ -8,14 +8,14 @@ Original file is located at
 """
 
 # Importar librerias
+import re
+from datetime import date
 import pandas as pd
 import streamlit as st
 from streamlit_lottie import st_lottie
 import requests
-import re
 import streamlit_authenticator as stauth
 from deta import Deta
-from datetime import date
 
 # Almacenamos la key de la base de datos en una constante
 DETA_KEY = "e0qgr2zg4tq_mbZWcCg7iGCpWFBbCy3GGFjEYHdFmZYR"
@@ -85,6 +85,10 @@ def add_food(email, new_food_data):
     user = db.get(email)
     date = new_food_data[0]
     calories = new_food_data[1]
+    carbs = new_food_data[2]
+    fat = new_food_data[3]
+    fiber = new_food_data[4]
+    protein = new_food_data[5]
 
     # Convierte la fecha en una cadena en formato ISO
     date_iso = date.isoformat()
@@ -95,17 +99,21 @@ def add_food(email, new_food_data):
         if food[0] == date_iso:
             # La fecha ya existe, actualiza las calorías en lugar de agregar una nueva entrada
             food[1] = calories
+            food[2] = carbs
+            food[3] = fat
+            food[4] = fiber
+            food[5] = protein
             food_updated = True
             break  # Termina el bucle si la fecha coincide
 
     # Si no se actualizó, agrega una nueva entrada
     if not food_updated:
-        user["food"].append([date_iso, calories])
+        user["food"].append([date_iso, calories, carbs, fat, fiber, protein])
 
     # Actualiza el usuario en la base de datos
     db.put(user)
 
-def update_food(email, value, date):
+def update_food(email, values):
     """
     Actualiza la comida del dia de en caso de que se vuelvan a enviar
     datos de un dia ya registrado en la base de datos
@@ -113,8 +121,8 @@ def update_food(email, value, date):
     user = db.get(email)
 
     for food in user["food"]:
-        if food[0] == date:
-            food[1] = value
+        if food[0] == values[0]:
+            food[1] = values[1]
             break
     
     db.put(user)
@@ -172,13 +180,14 @@ st.markdown(footer,unsafe_allow_html=True)
 
 # Lectura de datos
 url_foods = (
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRHczI8B0Qbww2boToqMi"
-  "G-wi7T3N5fq9QcEFqryMGuWi0yFT7ty1vZTXgeAgf4S9HyDqy8APfmdWtQ/pub?output=csv"
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTRvtsx_JsvwK7xeQ-tB-Q6zOsAv"
+  "3hmo5t4On_FQicArs50-N0QJy60J3DH6rNsxRJgHLlGXCinT9yO/pub?output=csv"
   )
 
 
-# Cargar el DataFrame desde la URL
+# Cargar el DataFrame desde la URL y ordenar alfabeticamente
 df_foods_base = pd.read_csv(url_foods)
+df_foods_base = df_foods_base.sort_values("Food")
 
 # Eliminar comas y convertir a enteros en el DataFrame food
 columns_to_clean = ["Calories", "Grams", "Protein", "Fat","Sat.Fat",
@@ -233,23 +242,27 @@ for alimento_seleccionado in alimentos_seleccionados:
     if not detalles_alimento.empty:
         st.write(f"### Detalles del Alimento Seleccionado ({alimento_seleccionado}):")
 
-         # Genera una clave única para el widget number_input
+        # Genera una clave única para el widget number_input
         widget_key = f"number_input_{alimento_seleccionado}"
 
         # Utiliza la clave única en el number_input
         cantidad = st.number_input("Cantidad de porciones consumidas", value=1, key=widget_key)
-        calorias_alimento = detalles_alimento["Calories"].values[0] * cantidad
-        total_calorias_consumidas += calorias_alimento
-        carbohidratos_alimento = detalles_alimento["Carbs"].values[0] * cantidad
-        total_carbohidratos_consumidas += carbohidratos_alimento
-        proteina_alimento = detalles_alimento["Protein"].values[0] * cantidad
-        total_proteinas_consumidas += proteina_alimento
-        grasas_saturadas_alimento = detalles_alimento["Sat.Fat"].values[0] * cantidad
-        total_grasa_saturada_consumidas += grasas_saturadas_alimento
-        fibra_alimento = detalles_alimento["Fiber"].values[0] * cantidad
-        total_fibra_consumida_consumidas += fibra_alimento
-        st.write(detalles_alimento)
 
+        # Obtiene los valores del alimento
+        calorias_alimento = detalles_alimento["Calories"].values[0]
+        carbohidratos_alimento = detalles_alimento["Carbs"].values[0]
+        proteina_alimento = detalles_alimento["Protein"].values[0]
+        grasas_saturadas_alimento = detalles_alimento["Sat.Fat"].values[0]
+        fibra_alimento = detalles_alimento["Fiber"].values[0]
+
+        # Realiza las sumas utilizando NumPy
+        total_calorias_consumidas += calorias_alimento * cantidad
+        total_carbohidratos_consumidas += carbohidratos_alimento * cantidad
+        total_proteinas_consumidas += proteina_alimento * cantidad
+        total_grasa_saturada_consumidas += grasas_saturadas_alimento * cantidad
+        total_fibra_consumida_consumidas += fibra_alimento * cantidad
+
+        st.write(detalles_alimento)
     else:
         st.write(f"Selecciona un alimento de la lista o verifica la ortografía.")
 
@@ -260,13 +273,18 @@ st.write(f"Total de grasas saturadas consumida: {total_grasa_saturada_consumidas
 st.write(f"Total de fibra consumida: {total_fibra_consumida_consumidas} ")
 st.write(f"Total de proteina consumida: {total_proteinas_consumidas} ")
 
-# Se almacena el valor de las calorias al clickear el boton
-boton_almacenar = st.button("Almacenar calorias")
+# Se almacena el valor de los datos nutricionales al presionar el boton
+boton_almacenar = st.button("Almacenar datos nutricionales")
 
 if boton_almacenar:
     if st.session_state["authentication_status"]:
         fecha = date.today()
-        add_food(email, [fecha, float(total_calorias_consumidas)])
+        add_food(email, [fecha,
+                         float(total_calorias_consumidas),
+                         float(total_carbohidratos_consumidas),
+                         float(total_grasa_saturada_consumidas),
+                         float(total_fibra_consumida_consumidas),
+                         float(total_proteinas_consumidas)])
         st.success("Datos almacenados")
     else:
         st.warning("Para almacenar los datos primero debe iniciar sesion o registrarse")

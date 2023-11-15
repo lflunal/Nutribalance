@@ -8,11 +8,11 @@ Original file is located at
 """
 
 # Importar librerias
+import re
 import pandas as pd
 import streamlit as st
 from streamlit_lottie import st_lottie
 import requests
-import re
 import streamlit_authenticator as stauth
 from deta import Deta
 
