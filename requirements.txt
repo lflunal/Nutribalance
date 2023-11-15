@@ -4,3 +4,4 @@ streamlit-extras
 deta
 streamlit-lottie
 datetime
+matplotlib
