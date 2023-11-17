@@ -313,6 +313,7 @@ if st.session_state["authentication_status"]:
     plt.xticks(rotation=45)
     st.pyplot(plt.gcf())
 
+
     # Mostrar recomendaciones
     mostrar_diferencia_calorias(df_ultimos_7_dias["Calorias"].sum(),calcular_calorias_diarias)
     mostrar_diferencia_carbohidratos(df_ultimos_7_dias["Carbohidratos"].sum(),calcular_carbohidratos_diarios)
