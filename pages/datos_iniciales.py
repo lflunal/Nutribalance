@@ -107,6 +107,10 @@ def validar_username(username):
         return True
     return False
 
+def get_datos_nutricionales(email):
+    usuario = db.get(email)
+    return usuario.get("food", [])
+
 # Manejo de posibles errores
 try:
     # Se almacenan los datos necesarios de la DB
