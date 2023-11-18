@@ -175,7 +175,7 @@ def registro():
     # T&C antes de enviar un registro
     st.write("Debe aceptar los términos y condiciones antes de"
          "poder enviar el formulario")
-    aceptar_terminos = st.checkbox("Acepto los [Términos y Condiciones]
+    aceptar_terminos = st.checkbox("Acepto los [Términos y Condiciones]"
     "(https://github.com/\lflunal/ppi_20/blob/Luis-Lopez/Politica%20de"
     "%20Tratamiento%20de%20Datos.md)")
 
