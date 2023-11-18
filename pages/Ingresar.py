@@ -28,18 +28,17 @@ db = deta.Base("NutribalanceUsers")
 # Funcion para registrar usuarios en la DB
 def insertar_usuario(email, username, age, height, password):
     """
-    Agrega un usuario a la Base de Datos.
+    Agrega un nuevo usuario a la Base de Datos.
 
     Parameters:
-    - email (str): Correo electrónico del usuario.
-    - username (str): Nombre de usuario del usuario.
+    - email (str): Dirección de correo electrónico única del usuario.
+    - username (str): Nombre de usuario único del usuario.
     - age (int): Edad del usuario.
     - height (float): Altura del usuario en centímetros.
     - password (str): Contraseña del usuario.
 
     Returns:
-    - None: La función agrega el usuario a la Base de Datos,
-    pero no devuelve nada.
+    - bool: True si la inserción fue exitosa, False si hubo un error.
     """
     return db.put({"key": email, "username": username, "age": age,
                    "height": height, "password": password})
@@ -47,71 +46,72 @@ def insertar_usuario(email, username, age, height, password):
 # Funcion que retorna los usuarios registrados
 def fetch_usuarios():
     """
-    Recupera los usuarios registrados en la Base de Datos.
+   Recupera y devuelve un diccionario con los usuarios
+   registrados en la Base de Datos.
 
-    Returns:
-    - dict: Un diccionario que contiene los usuarios registrados,
-     donde las claves son las direcciones de correo electrónico
-     y los valores son los datos de los usuarios.
-    """
+   Returns:
+   - dict: Un diccionario que contiene la información de los
+   usuarios registrados.
+   Cada clave es la dirección de correo electrónico única del usuario,
+   y cada valor es un diccionario con detalles como
+   "username", "age", "height", y "password".
+   """
+    # guardamos los datos de la DB en users y retornamos su contenido
     users = db.fetch()
-    return users.items()
+    return users.items
 
 # Funcion que retorna los emails de los usuarios registrados
 def get_emails_usuarios():
     """
-    Obtiene una lista con las direcciones de correo electrónico de
-    cada usuario registrado.
+    Recupera y devuelve una lista con las direcciones de correo
+    electrónico de cada usuario registrado en la Base de Datos.
 
     Returns:
-    - list: Una lista que contiene las direcciones de correo electrónico
-    de cada usuario almacenado en la Base de Datos.
+    - list: Una lista que contiene las direcciones de correo electrónico de
+    todos los usuarios registrados.
     """
-    # Recuperamos los datos de la Base de Datos
+    # guardamos los datos de la DB en users
     users = db.fetch()
-
-    # Filtramos y extraemos las direcciones de correo electrónico de los usuarios
-    emails = [user["key"] for user in users.items()]
-
+    emails = []
+    # filtramos los emails de la DB
+    for user in users.items:
+        emails.append(user["key"])
     return emails
 
 # Funcion que retorna los nombres de usuario de los usuarios registrados
 def get_usernames_usuarios():
     """
-    Obtiene una lista con los nombres de usuario de cada usuario registrado.
+    Recupera y devuelve una lista con los nombres de usuario de cada
+    usuario registrado en la Base de Datos.
 
     Returns:
     - list: Una lista que contiene los nombres de usuario de
-     cada usuario almacenado en la Base de Datos.
+    todos los usuarios registrados.
     """
-    # Recuperamos los datos de la Base de Datos
+    # guardamos los datos de la DB en users
     users = db.fetch()
-
-    # Filtramos y extraemos los nombres de usuario de los usuarios
-    usernames = [user["username"] for user in users.items()]
-
+    usernames = []
+    # filtramos los usernames de la DB
+    for user in users.items:
+        usernames.append(user["username"])
     return usernames
 
 # Funcion que verifica si un email ingresado es valido
 def validar_email(email):
     """
-    Verifica si la cadena proporcionada es una dirección de
-    correo electrónico válida.
+   Retorna True si el email ingresado es válido, de lo contrario retorna False
 
-    Parameters:
-    - email (str): La cadena que se va a verificar como dirección de
-    correo electrónico.
+   Parameters:
+   - email (str): Dirección de correo electrónico a validar.
 
-    Returns:
-    - bool: True si la cadena es una dirección de correo electrónico válida,
-    False en caso contrario.
-    """
-    # Patrones típicos de una dirección de correo electrónico válida
-    pattern = "^[a-zA-Z0_9-_]+@[a-zA-Z0-9-_]+\.[a-z]{1,3}$"
-    pattern1 = "^[a-zA-Z0_9-_]+@[a-zA-Z0-9-_]+\.[a-z]{1,3}+\.[a-z]{1,3}$"
+   Returns:
+   - bool: True si el email es válido, False si no lo es.
+   """
+    # Patrones tipicos de un email valido
+    pattern = "^[a-zA-Z0_9-_]+@[a-zA-Z0_9-_]+\.[a-z]{1,3}$"
+    pattern1 = "^[a-zA-Z0_9-_]+@[a-zA-Z0_9-_]+\.[a-z]{1,3}+\.[a-z]{1,3}$"
 
-    # Verifica si el email ingresado coincide con alguno de los
-    # patrones definidos
+    # Verifica si el email ingresado coincide con algun patron definido
     if re.match(pattern, email) or re.match(pattern1, email):
         return True
     return False
@@ -119,23 +119,21 @@ def validar_email(email):
 # Funcion que verifica si un username ingresado es valido
 def validar_username(username):
     """
-    Verifica si la cadena proporcionada es un nombre de usuario válido.
+    Retorna True si el nombre de usuario ingresado es válido,
+    de lo contrario, retorna False.
 
     Parameters:
-    - username (str): La cadena que se va a verificar como nombre de usuario.
+    - username (str): Nombre de usuario a validar.
 
     Returns:
-    - bool: True si la cadena es un nombre de usuario válido,
-    False en caso contrario.
+    - bool: True si el nombre de usuario es válido, False si no lo es.
     """
-    # Se define el patrón de un nombre de usuario típico
+    # Se define el patron de un username tipico
     pattern = "^[a-zA-Z0-9]*$"
-
-    # Se verifica si el nombre de usuario ingresado coincide con el patrón típico
+    # Se verifica si el username ingresado coincide con el patron tipico
     if re.match(pattern, username):
         return True
     return False
-
 
 # Manejo de posibles errores
 try:
@@ -156,13 +154,13 @@ try:
     Authenticator = stauth.Authenticate(credentials, cookie_name="Streamlit",
                                         key="cookiekey", cookie_expiry_days=3)
 
-    # La funcion login regresa una tupla con estos 3 valores,
-    # los cuales atrapamos
+    # La funcion login regresa una tupla con estos
+    # 3 valores los cuales atrapamos
     email, authentication_status, username = Authenticator.login("Ingresar",
                                                                  "main")
 
-    # Comprobacion de la existencia del username dentro de la DB y
-    # mensajes de advertencia en caso de un mal inicio de sesion
+    # Comprobacion de la existencia del username dentro de la DB
+    # y mensajes de advertencia en caso de un mal inicio de sesion
     if username:
         if username in usernames:
             if authentication_status:
