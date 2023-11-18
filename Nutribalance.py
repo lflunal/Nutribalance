@@ -10,13 +10,13 @@ Original file is located at
 # Importar librerias
 import re
 import pandas as pd
-import numpy as np
+#import numpy as np
 import streamlit as st
-import streamlit_extras
+#import streamlit_extras
 import streamlit_authenticator as stauth
 from deta import Deta
 from datetime import datetime
-from datetime import time
+#from datetime import time
 import matplotlib.pyplot as plt
 
 # Almacenamos la key de la base de datos en una constante
@@ -315,7 +315,8 @@ if st.session_state["authentication_status"]:
 
 
     # Mostrar recomendaciones
-    mostrar_diferencia_calorias(df_ultimos_7_dias["Calorias"].sum(),calcular_calorias_diarias)
+    st.write("RECOMENDACIONES")
+    #mostrar_diferencia_calorias(df_ultimos_7_dias["Calorias"].sum(),calcular_calorias_diarias,total_calorias_quemadas)
     mostrar_diferencia_carbohidratos(df_ultimos_7_dias["Carbohidratos"].sum(),calcular_carbohidratos_diarios)
     mostrar_diferencia_proteinas(df_ultimos_7_dias["Proteinas"].sum(), calcular_proteinas_diarias)
     mostrar_diferencia_grasas(df_ultimos_7_dias["Grasa"].sum(),calcular_grasas_diarias)
