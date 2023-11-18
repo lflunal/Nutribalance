@@ -134,15 +134,6 @@ def validar_email(email):
         return True
     return False
 
-# Funcion que verifica si un username ingresado es valido
-#def validar_username(username):
- #   """Retorna True si el username es valido, de lo contrario, retorna False"""
-    # Se define el patron de un username tipico
-  #  pattern = "^[a-zA-Z0-9]*$"
-    # Se verifica si el username ingresado coincide con el patron tipico
-   # if re.match(pattern, username):
-    #    return True
-    #return False
 def validar_username(username):
     """
     Verifica si el username ingresado es válido según un patrón típico.
@@ -279,7 +270,5 @@ footer = """
 <div class="footer">
     <p>App desarrollada por: <br />
     Luis Fernando López Echeverri | Andres Felipe Ramirez Suarez <br />
-    Contactenos: <a href="#">lulopeze@unal.edu.co</a> | <a href="#">aramirezsu@unal.edu.co</a></p>
 </div>
 """
-#st.markdown(footer,unsafe_allow_html=True)
