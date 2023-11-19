@@ -170,30 +170,28 @@ def registro():
     "(https://github.com/\lflunal/ppi_20/blob/Luis-Lopez/Politica%20de"
     "%20Tratamiento%20de%20Datos.md)")
 
-    # Creacion del formulario
-    with st.form(key="registro", clear_on_submit=True):
-        # Titulo del formulario
-        st.subheader("Registrarse")
 
-        # Campos a ser llenados por el usuario
-        email = st.text_input("Email", placeholder="Ingrese su Email")
-        username = st.text_input("Usuario",
-                                 placeholder="Ingrese su nombre de usuario")
-        age = st.text_input("Edad (en años)",
-                            placeholder="Ingrese su edad en años")
-        height = st.text_input("Altura (en cm sin puntos ni comas)",
-                  placeholder="Ingrese su estatura en cm sin puntos ni comas")
-        password = st.text_input("Contraseña",
-                          placeholder="Ingrese su contraseña", type="password")
+    # Si se aceptan los términos y condiciones habilitar el registro
+    if aceptar_terminos:
+        # Creacion del formulario
+        with st.form(key="registro", clear_on_submit=True):
+            # Titulo del formulario
+            st.subheader("Registrarse")
 
-            # Si se aceptan los términos y condiciones,
-            # habilitar el botón de envío
-        if aceptar_terminos:
+            # Campos a ser llenados por el usuario
+            email = st.text_input("Email", placeholder="Ingrese su Email")
+            username = st.text_input("Usuario",
+                                    placeholder="Ingrese su nombre de usuario")
+            age = st.text_input("Edad (en años)",
+                                placeholder="Ingrese su edad en años")
+            height = st.text_input("Altura (en cm sin puntos ni comas)",
+                    placeholder="Ingrese su estatura en cm sin puntos ni comas")
+            password = st.text_input("Contraseña",
+                            placeholder="Ingrese su contraseña", type="password")
             # Boton de envio de datos de registro
             st.form_submit_button("Registrate")
-        else:
-            st.warning("Debes aceptar los términos y condiciones"
-            "antes de enviar el formulario")
+    else:
+        st.warning("Debes aceptar los términos y condiciones antes de registrarte")
 
         # Revisar validez de los datos ingresados por el usuario
         # y registro a la DB
