@@ -196,8 +196,9 @@ if st.session_state["authentication_status"]:
     # Restablecer índice
     df_ultimos_7_dias = df_ultimos_7_dias.reset_index(drop=True)
 
-    tipo_diario = st.selectbox("Selecciona la variable para el gráfico diario", ["Calorías", "Carbohidratos", "Grasa", "Proteínas", "Fibra"])
-    st.subheader(f"Grafico de tu consumo diario de {tipo_diario}")
+    # tipo_diario = st.selectbox("Selecciona la variable para el gráfico diario",
+    # ["Calorías", "Carbohidratos", "Grasa", "Proteínas", "Fibra"])
+    st.subheader(f"Grafico de tu consumo diario semanal")
 
     # Crear gráfico de barras de calorías diarias de los últimos 7 días
     plt.figure(figsize=(10, 6))
@@ -256,7 +257,8 @@ if st.session_state["authentication_status"]:
     plt.figure(figsize=(10, 6))
     df_meses["Mes"] = df_meses["Fecha"].dt.to_period("M")
     df_calorias_mensuales = df_meses.groupby("Mes")["Calorias"].sum().reset_index()
-    plt.bar(df_calorias_mensuales["Mes"].astype(str), df_calorias_mensuales["Calorias"],
+    plt.bar(df_calorias_mensuales["Mes"].astype(str),
+            df_calorias_mensuales["Calorias"],
             color='blue', alpha=0.7)
     plt.title('Calorías Mensuales Consumidas (Últimos 12 Meses)')
     plt.xlabel('Mes')
@@ -268,7 +270,8 @@ if st.session_state["authentication_status"]:
     # Graficos Mensuales para Carbohidratos
     plt.figure(figsize=(10, 6))
     df_calorias_mensuales = df_meses.groupby("Mes")["Carbohidratos"].sum().reset_index()
-    plt.bar(df_calorias_mensuales["Mes"].astype(str), df_calorias_mensuales["Carbohidratos"],
+    plt.bar(df_calorias_mensuales["Mes"].astype(str),
+            df_calorias_mensuales["Carbohidratos"],
             color='green', alpha=0.7)
     plt.title('Carbohidratos Mensuales Consumidos (Últimos 12 Meses)')
     plt.xlabel('Mes')
