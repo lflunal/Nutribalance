@@ -170,37 +170,16 @@ footer = """
 """
 st.markdown(footer,unsafe_allow_html=True)
 
-# Lectura de datos
-url_foods = (
-  "https://docs.google.com/spreadsheets/d/e/2PACX"
-  "-1vTRvtsx_JsvwK7xeQ-tB-Q6zOsAv3hmo5t4On_FQicArs50"
-  "-N0QJy60J3DH6rNsxRJgHLlGXCinT9yO/pub?output=csv"
-  )
+# Recomendaciones
+# Funcion calorias diarias
+# Funcion para mostrar recomendaciones de calorias segun los alimentos seleccionados
+#def mostrar_diferencia_calorias(total_calorias_consumidas, total_calorias_quemadas, calorias_diarias):
+ #   diferencia_calorias = calorias_diarias - (total_calorias_consumidas - total_calorias_quemadas)
+  #  if diferencia_calorias > 0:
+   #     st.write(f"Has consumido {int(diferencia_calorias)} calorías en exceso hoy. Considera ajustar tu ingesta calórica.")
+    #elif diferencia_calorias < 0:
+     #   st.write(f"Te faltan {int(abs(diferencia_calorias))} calorías para alcanzar tu ingesta calórica diaria. ¡Asegúrate de comer lo suficiente!")
 
-
-# Cargar el DataFrame desde la URL y ordenar alfabeticamente
-df_foods_base = pd.read_csv(url_foods)
-df_foods_base = df_foods_base.sort_values("Food")
-
-# Eliminar comas y convertir a enteros en el DataFrame food
-columns_to_clean = ["Calories", "Grams", "Protein", "Fat","Sat.Fat",
-                    "Fiber", "Carbs"]
-
-for column in columns_to_clean:
-    df_foods_base[column] = df_foods_base[column].str.replace(',',
-                                                              '', regex=True)
-    df_foods_base[column] = df_foods_base[column].str.replace('t',
-                                                              '0', regex=True)
-    df_foods_base[column] = df_foods_base[column].str.replace('a',
-                                                              '0', regex=True)
-    df_foods_base[column] = df_foods_base[column].str.replace("'",
-                                                              '', regex=True)
-    df_foods_base[column] = df_foods_base[column].str.strip()
-    df_foods_base[column] = df_foods_base[column].str.replace(',',
-                                                              '.', regex=True)
-    df_foods_base[column] = df_foods_base[column].replace('', '0')
-    df_foods_base[column] = df_foods_base[column].astype(float) \
-    .fillna(0).astype(int)
 
 # Funcion proteinas diarias
 def calcular_proteinas_diarias(peso, objetivo):
@@ -239,7 +218,7 @@ def mostrar_diferencia_carbohidratos(total_carbohidratos_consumidos, carbohidrat
    elif diferencia_carbohidratos < 0:
         st.write(f"Te faltan {int(abs(diferencia_carbohidratos))} gramos de carbohidratos para alcanzar tu ingesta diaria. ¡Asegúrate de consumir suficientes carbohidratos!")
         st.write(f"**Te recomendamos que consumas los siguientes alimentos con más carbohidratos**")
-        top_carbs = df_foods_base.nlargest(5, 'Carbs')
+        top_carbs = df.nlargest(5, 'Carbs')
         st.write(top_carbs)
    else:
         st.write("Estás en línea con tu ingesta diaria de carbohidratos. ¡Bien hecho!")
@@ -264,14 +243,14 @@ def mostrar_diferencia_proteinas(total_proteinas_consumidas, proteinas_diarias):
     elif diferencia_proteinas < 0:
         st.write(f"Te faltan {int(abs(diferencia_proteinas))} gramos de proteínas para alcanzar tu ingesta diaria. ¡Asegúrate de consumir suficientes proteínas!")
         st.write(f"**Te recomendamos que consumas los siguientes alimentos con más proteínas**")
-        top_protein = df_foods_base.nlargest(5, 'Protein')
+        top_protein = df.nlargest(5, 'Protein')
         st.write(top_protein)
     else:
         st.write("Estás en línea con tu ingesta diaria de proteínas. ¡Bien hecho!")
 
 
 # Titulo de la seccion
-st.title("Calculadora de Calorias y Recomendaciones")
+st.title("Datos iniciales")
 
 # Funcion para cargar las animaciones
 def load_lottieurl(url):
@@ -437,101 +416,138 @@ boton_calcular = st.button("CALCULAR")
 
 # Verifica si el usuario presiona el boton
 if boton_calcular:
-  st.write("### RECOMENDACIONES")
+    # Verifica si el usuario inicio sesion
+    if st.session_state["authentication_status"]:
 
-  # Verifica si el usuario inicio sesion
-  if st.session_state["authentication_status"]:
+        # Verificar si el usuario ha ingresado valores válidos
+        if peso > 0 and altura > 0:
+            # Calcular el IMC
+            altura_metros = altura / 100
+            imc = peso / (altura_metros ** 2)
 
-      # Verificar si el usuario ha ingresado valores válidos
-      if peso > 0 and altura > 0:
-          # Calcular el IMC
-          altura_metros = altura / 100
-          imc = peso / (altura_metros ** 2)
+            # Determinar la categoría de IMC basada en el sexo
+            if sexo == "Masculino":
+                if isinstance(imc, str):
+                    st.write(imc)
+                else:
+                    if imc < 18.5:
+                        categoria = "Bajo peso"
+                    elif 18.5 <= imc < 24.9:
+                        categoria = "Peso normal"
+                    elif 24.9 <= imc < 29.9:
+                        categoria = "Sobrepeso"
+                    else:
+                        categoria = "Obesidad"
+                    st.write(f"Tu IMC es {imc:.2f}, lo que corresponde"
+                             "a la categoría de "
+                f"{categoria} para hombres.")
 
-          # Determinar la categoría de IMC basada en el sexo
-          if sexo == "Masculino":
-              if isinstance(imc, str):
-                  st.write(imc)
-              else:
-                  if imc < 18.5:
-                      categoria = "Bajo peso"
-                  elif 18.5 <= imc < 24.9:
-                      categoria = "Peso normal"
-                  elif 24.9 <= imc < 29.9:
-                      categoria = "Sobrepeso"
-                  else:
-                      categoria = "Obesidad"
-                  st.write(f"Tu IMC es {imc:.2f}, lo que corresponde"
-                           "a la categoría de "
-                           f"{categoria} para hombres.")
 
-          elif sexo == "Femenino":
-              if isinstance(imc, str):
-                  st.write(imc)
-              else:
-                  if imc < 18.5:
-                      categoria = "Bajo peso"
-                  elif 18.5 <= imc < 24.9:
-                      categoria = "Peso normal"
-                  elif 24.9 <= imc < 29.9:
-                      categoria = "Sobrepeso"
-                  else:
-                      categoria = "Obesidad"
-                  st.write(f"Tu IMC es {imc:.2f}, lo que corresponde"
-                           "a la categoría de "
-                           f"{categoria} para mujeres.")
-      else:
-          st.write("Por favor, ingresa valores válidos para peso y altura.")
-      calorias_diarias = calcular_calorias_diarias(sexo, peso, altura,
-                                                   edad, nivel_actividad)
+            elif sexo == "Femenino":
+                if isinstance(imc, str):
+                    st.write(imc)
+                else:
+                    if imc < 18.5:
+                        categoria = "Bajo peso"
+                    elif 18.5 <= imc < 24.9:
+                        categoria = "Peso normal"
+                    elif 24.9 <= imc < 29.9:
+                        categoria = "Sobrepeso"
+                    else:
+                        categoria = "Obesidad"
+                    st.write(f"Tu IMC es {imc:.2f}, lo que corresponde"
+                             "a la categoría de "
+                f"{categoria} para mujeres.")
+        else:
+            st.write("Por favor, ingresa valores válidos para peso y altura.")
+        calorias_diarias = calcular_calorias_diarias(sexo, peso, altura,
+                                                     edad, nivel_actividad)
 
-      # Mostrar el resultado
-      st.write(f"Calorías necesarias en un día: "
-               f"{int(calorias_diarias)} calorías")
-      datos_usuario = get_datos_nutricionales(email)
-
+        # Mostrar el resultado
+        st.write(f"Calorías necesarias en un día: "
+         f"{int(calorias_diarias)} calorías")
+         datos_usuario = get_datos_nutricionales(email)
       # Convierte los datos a un formato que se puede utilizar fácilmente
       datos = []
       for comida in datos_usuario:
           try:
               fecha = datetime.strptime(comida[0], "%Y-%m-%d")
           except (ValueError, TypeError):
-              # Fecha predeterminada si hay un problema con el formato
-              fecha = datetime.now()
+              fecha = datetime.now()  # Fecha predeterminada si hay un problema con el formato
 
           calorias = comida[1] if len(comida) > 1 else 0
           carbohidratos = comida[2] if len(comida) > 2 else 0
           grasa = comida[3] if len(comida) > 3 else 0
           fibra = comida[4] if len(comida) > 4 else 0
           proteinas = comida[5] if len(comida) > 5 else 0
-          datos.append([fecha, calorias, carbohidratos, grasa,
-                        fibra, proteinas])
+          datos.append([fecha, calorias, carbohidratos, grasa, fibra, proteinas])
 
       # Crea un DataFrame de pandas
-      columnas = ["Fecha", "Calorias", "Carbohidratos", "Grasa",
-                  "Fibra", "Proteinas"]
+      columnas = ["Fecha", "Calorias", "Carbohidratos", "Grasa", "Fibra", "Proteinas"]
       df = pd.DataFrame(datos, columns=columnas)
 
       # Calcular calorías semanales
-      # Obtener el nombre del día de la semana
-      df["DiaSemana"] = pd.to_datetime(df["Fecha"]).dt.strftime('%A')
+      df["DiaSemana"] = pd.to_datetime(df["Fecha"]).dt.strftime('%A')  # Obtener el nombre del día de la semana
 
-      # Obtener la fecha de hace 7 días a partir de
-      # la fecha más reciente en los datos
+      # Obtener la fecha de hace 7 días a partir de la fecha más reciente en los datos
       fecha_limite = df["Fecha"].max() - pd.DateOffset(days=6)
 
       # Filtrar los últimos 7 días
       df_ultimos_7_dias = df[df['Fecha'] >= (datetime.now() - pd.DateOffset(days=7))]
 
-      # Mostrar recomendaciones
-      # mostrar_diferencia_calorias(df_ultimos_7_dias["Calorias"].sum(),calcular_calorias_diarias,total_calorias_quemadas)
-      mostrar_diferencia_carbohidratos(df_ultimos_7_dias["Carbohidratos"].sum(),
-                                       calcular_carbohidratos_diarios(calorias_diarias, df_ultimos_7_dias["Proteinas"].sum(),
-                                                                      df_ultimos_7_dias["Grasa"].sum()))
-      mostrar_diferencia_proteinas(df_ultimos_7_dias["Proteinas"].sum(),
-                                    calcular_proteinas_diarias(peso, objetivo))
-      mostrar_diferencia_grasas(df_ultimos_7_dias["Grasa"].sum(),
-                                 calcular_grasas_diarias(peso, objetivo))
+      # Crear gráfico de barras de calorías diarias de los últimos 7 días
+      plt.figure(figsize=(10, 6))
+      plt.bar(df_ultimos_7_dias["Fecha"], df_ultimos_7_dias["Calorias"], color='blue', alpha=0.7)
+      plt.title('Calorías Diarias Consumidas (Últimos 7 Días)')
+      plt.xlabel('Fecha')
+      plt.ylabel('Calorías')
+      plt.grid(True)
+      plt.xticks(rotation=45)  # Rotar etiquetas del eje x para mayor legibilidad
+      st.pyplot(plt.gcf())
 
-  else:
-      st.warning("Si desea calcular sus resultados debe iniciar sesion")
+      # Crear gráfico de barras de carbohidratos diarios de los últimos 7 días
+      plt.figure(figsize=(10, 6))
+      plt.bar(df_ultimos_7_dias["Fecha"], df_ultimos_7_dias["Carbohidratos"], color='green', alpha=0.7)
+      plt.title('Carbohidratos Diarios Consumidos (Últimos 7 Días)')
+      plt.xlabel('Fecha')
+      plt.ylabel('Carbohidratos')
+      plt.grid(True)
+      plt.xticks(rotation=45)
+      st.pyplot(plt.gcf())
+
+      # Crear gráfico de barras de grasa diaria de los últimos 7 días
+      plt.figure(figsize=(10, 6))
+      plt.bar(df_ultimos_7_dias["Fecha"], df_ultimos_7_dias["Grasa"], color='red', alpha=0.7)
+      plt.title('Grasa Diaria Consumida (Últimos 7 Días)')
+      plt.xlabel('Fecha')
+      plt.ylabel('Grasas')
+      plt.grid(True)
+      plt.xticks(rotation=45)
+      st.pyplot(plt.gcf())
+
+      # Crear gráfico de barras de proteínas diarias de los últimos 7 días
+      plt.figure(figsize=(10, 6))
+      plt.bar(df_ultimos_7_dias["Fecha"], df_ultimos_7_dias["Proteinas"], color='purple', alpha=0.7)
+      plt.title('Proteínas Diarias Consumidas (Últimos 7 Días)')
+      plt.xlabel('Fecha')
+      plt.ylabel('Proteínas (g)')
+      plt.grid(True)
+      plt.xticks(rotation=45)
+      st.pyplot(plt.gcf())
+
+
+      # Mostrar recomendaciones
+      #mostrar_diferencia_calorias(df_ultimos_7_dias["Calorias"].sum(),calcular_calorias_diarias,total_calorias_quemadas)
+      mostrar_diferencia_carbohidratos(df_ultimos_7_dias["Carbohidratos"].sum(),calcular_carbohidratos_diarios(calorias_diarias,df_ultimos_7_dias["Proteinas"].sum(),df_ultimos_7_dias["Grasa"].sum()))
+      mostrar_diferencia_proteinas(df_ultimos_7_dias["Proteinas"].sum(), calcular_proteinas_diarias(peso,objetivo))
+      mostrar_diferencia_grasas(df_ultimos_7_dias["Grasa"].sum(),calcular_grasas_diarias(peso, objetivo))
+
+    else:
+        st.warning("Si desea calcular su IMC debe iniciar sesion")
+
+# Pagina a mostrar en caso de tener un usuario con sesion ingresada
+#if st.session_state["authentication_status"]:
+    # Obtenemos datos nutricionales del usuario
+
+#else:
+ #   st.write("Si desea ver sus datos nutricionales y recomendaciones, Inicie sesion o Registrese")
