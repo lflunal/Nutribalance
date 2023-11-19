@@ -170,6 +170,7 @@ def registro():
     "(https://github.com/\lflunal/ppi_20/blob/Luis-Lopez/Politica%20de"
     "%20Tratamiento%20de%20Datos.md)")
 
+
     # Si se aceptan los términos y condiciones habilitar el registro
     if aceptar_terminos:
         # Creacion del formulario
@@ -191,6 +192,7 @@ def registro():
             st.form_submit_button("Registrate")
     else:
         st.warning("Debes aceptar los términos y condiciones antes de registrarte")
+
         # Revisar validez de los datos ingresados por el usuario
         # y registro a la DB
         if email and username and age and height and password:
