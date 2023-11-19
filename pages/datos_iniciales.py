@@ -418,6 +418,7 @@ boton_calcular = st.button("CALCULAR")
 if boton_calcular:
     # Verifica si el usuario inicio sesion
     if st.session_state["authentication_status"]:
+
         # Verificar si el usuario ha ingresado valores válidos
         if peso > 0 and altura > 0:
             # Calcular el IMC
@@ -465,14 +466,7 @@ if boton_calcular:
         # Mostrar el resultado
         st.write(f"Calorías necesarias en un día: "
          f"{int(calorias_diarias)} calorías")
-
-    else:
-        st.warning("Si desea calcular su IMC debe iniciar sesion")
-
-# Pagina a mostrar en caso de tener un usuario con sesion ingresada
-if st.session_state["authentication_status"]:
-    # Obtenemos datos nutricionales del usuario
-    datos_usuario = get_datos_nutricionales(email)
+         datos_usuario = get_datos_nutricionales(email)
     # Convierte los datos a un formato que se puede utilizar fácilmente
     datos = []
     for comida in datos_usuario:
@@ -548,5 +542,12 @@ if st.session_state["authentication_status"]:
     mostrar_diferencia_proteinas(df_ultimos_7_dias["Proteinas"].sum(), calcular_proteinas_diarias(peso,objetivo))
     mostrar_diferencia_grasas(df_ultimos_7_dias["Grasa"].sum(),calcular_grasas_diarias(peso, objetivo))
 
-else:
-    st.write("Si desea ver sus datos nutricionales y recomendaciones, Inicie sesion o Registrese")
+    else:
+        st.warning("Si desea calcular su IMC debe iniciar sesion")
+
+# Pagina a mostrar en caso de tener un usuario con sesion ingresada
+#if st.session_state["authentication_status"]:
+    # Obtenemos datos nutricionales del usuario
+
+#else:
+ #   st.write("Si desea ver sus datos nutricionales y recomendaciones, Inicie sesion o Registrese")
