@@ -344,7 +344,7 @@ def calcular_calorias_diarias(sexo, peso, altura, edad, nivel_actividad):
 
 # Variable para mostrar diferencia de calorias en base a consumidas - gastadas
 def mostrar_diferencia_calorias(total_calorias_consumidas,
-                                total_calorias_quemadas, calorias_diarias):
+                                calorias_diarias):
     """
     Muestra un mensaje indicando la diferencia entre las calorías consumidas
     y quemadas respecto a la ingesta calórica diaria recomendada.
@@ -360,8 +360,8 @@ def mostrar_diferencia_calorias(total_calorias_consumidas,
     - None: No hay un valor de retorno específico;
     la función imprime un mensaje según la diferencia de calorías.
     """
-    diferencia_calorias = calorias_diarias - (total_calorias_consumidas
-                                              - total_calorias_quemadas)
+    diferencia_calorias = (calorias_diarias - total_calorias_consumidas)
+
     if diferencia_calorias > 0:
         st.write(f"Has consumido {int(diferencia_calorias)} calorías en"
                  "excesohoy. Considera ajustar tu ingesta calórica.")
@@ -544,9 +544,9 @@ if st.session_state["authentication_status"]:
 
     # Mostrar recomendaciones
     #mostrar_diferencia_calorias(df_ultimos_7_dias["Calorias"].sum(),calcular_calorias_diarias,total_calorias_quemadas)
-    mostrar_diferencia_carbohidratos(df_ultimos_7_dias["Carbohidratos"].sum(),calcular_carbohidratos_diarios)
-    mostrar_diferencia_proteinas(df_ultimos_7_dias["Proteinas"].sum(), calcular_proteinas_diarias)
-    mostrar_diferencia_grasas(df_ultimos_7_dias["Grasa"].sum(),calcular_grasas_diarias)
+    mostrar_diferencia_carbohidratos(df_ultimos_7_dias["Carbohidratos"].sum(),calcular_carbohidratos_diarios(calorias_diarias,df_ultimos_7_dias["Proteinas"].sum(),df_ultimos_7_dias["Grasa"].sum()))
+    mostrar_diferencia_proteinas(df_ultimos_7_dias["Proteinas"].sum(), calcular_proteinas_diarias(peso,objetivo))
+    mostrar_diferencia_grasas(df_ultimos_7_dias["Grasa"].sum(),calcular_grasas_diarias(peso, objetivo))
 
 else:
     st.write("Si desea ver sus datos nutricionales y recomendaciones, Inicie sesion o Registrese")
