@@ -95,6 +95,29 @@ def get_datos_nutricionales(email):
 # Titulo en la pagina
 st.title("Nutribalance")
 
+# Descripcion de la app
+st.write("Nutribalance es una aplicación web enfocada en el mejoramiento de la"
+"nutricion general de los usuarios, basandose en 3 objetivos básicos de los"
+         "mismos: Mantenerse en un peso, Bajar de peso o Subir de peso.")
+
+st.markdown("## Características de la app")
+
+# Caracteristicas de la app
+st.write("Calcular la información nutricional de las comidas del usuario.")
+st.write("Una vez registrado, revisar el progreso de las rutinas "
+"alimentarias del usuario.")
+st.write("Sincronización con dispositivos como relojes inteligentes para"
+"hacer seguimiento activo de los pasos del usuario y tenerlos en "
+"cuenta en la revisión del progreso.")
+st.write("Recomendaciones alimentarias basadas en los objetivos "
+"personales del usuario.")
+st.write("Las recomendaciones tendrán en cuenta alergias o intolerancias que "
+"tenga el usuario frente a ciertos alimentos/ingredientes, "
+"si este lo especifica.")
+
+# Boton para mostrar las graficas
+st.button("Graficar")
+
 # Manejo de posibles errores
 try:
     # Se almacenan los datos necesarios de la DB
@@ -179,14 +202,24 @@ if st.session_state["authentication_status"]:
     # Obtener el nombre del día de la semana
     df["DiaSemana"] = pd.to_datetime(df["Fecha"]).dt.strftime('%A')
 
-    # Obtener la fecha de hace 7 días a partir de la fecha
-    # más reciente en los datos
-    fecha_limite = df["Fecha"].max() - pd.DateOffset(days=6)
+    # Crear DataFrame con todos los días de la semana pasada
+    ultimo_dia = datetime.now().date()
+    dias_semana_pasada = pd.date_range(end=ultimo_dia, periods=7, freq="D")
+    df_ultimos_7_dias = pd.DataFrame({"Fecha": dias_semana_pasada})
 
-    # Filtrar los últimos 7 días
-    df_ultimos_7_dias = df[
-    df['Fecha'] >= (datetime.now() - pd.DateOffset(days=7))
-]
+    # Combinar con los datos reales
+    df_ultimos_7_dias = pd.merge(df_ultimos_7_dias, df, on="Fecha", how="left")
+
+    # Rellenar NaN (días sin datos) con 0
+    df_ultimos_7_dias = df_ultimos_7_dias.fillna(0)
+
+    # Ordenar por fecha
+    df_ultimos_7_dias = df_ultimos_7_dias.sort_values("Fecha")
+
+    # Restablecer índice
+    df_ultimos_7_dias = df_ultimos_7_dias.reset_index(drop=True)
+
+    st.subheader(f"Grafico de tu consumo diario semanal")
 
     # Crear gráfico de barras de calorías diarias de los últimos 7 días
     plt.figure(figsize=(10, 6))
@@ -196,7 +229,7 @@ if st.session_state["authentication_status"]:
     plt.xlabel('Fecha')
     plt.ylabel('Calorías')
     plt.grid(True)
-    plt.xticks(rotation=45)  # Rotar etiquetas del eje x para mayor legibilidad
+    plt.xticks(rotation=45)
     st.pyplot(plt.gcf())
 
     # Crear gráfico de barras de carbohidratos diarios de los últimos 7 días
@@ -232,6 +265,66 @@ if st.session_state["authentication_status"]:
     plt.xticks(rotation=45)
     st.pyplot(plt.gcf())
 
+    # Graficos Mensuales
+    st.subheader("Graficos de tu consumo mensual")
+    # Convertir la columna "Fecha" a formato datetime
+    df["Fecha"] = pd.to_datetime(df["Fecha"])
+
+    # Filtrar los últimos 12 meses
+    fecha_limite = df["Fecha"].max() - pd.DateOffset(months=12)
+    df_meses = df[df['Fecha'] >= fecha_limite]
+
+    # Crear gráfico de barras de calorías mensuales de los últimos 12 meses
+    plt.figure(figsize=(10, 6))
+    df_meses["Mes"] = df_meses["Fecha"].dt.to_period("M")
+    df_calorias_mensuales = df_meses.groupby("Mes")["Calorias"].sum().reset_index()
+    plt.bar(df_calorias_mensuales["Mes"].astype(str),
+            df_calorias_mensuales["Calorias"],
+            color='blue', alpha=0.7)
+    plt.title('Calorías Mensuales Consumidas (Últimos 12 Meses)')
+    plt.xlabel('Mes')
+    plt.ylabel('Calorías')
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    st.pyplot(plt.gcf())
+
+    # Graficos Mensuales para Carbohidratos
+    plt.figure(figsize=(10, 6))
+    df_calorias_mensuales = df_meses.groupby("Mes")["Carbohidratos"].sum().reset_index()
+    plt.bar(df_calorias_mensuales["Mes"].astype(str),
+            df_calorias_mensuales["Carbohidratos"],
+            color='green', alpha=0.7)
+    plt.title('Carbohidratos Mensuales Consumidos (Últimos 12 Meses)')
+    plt.xlabel('Mes')
+    plt.ylabel('Carbohidratos')
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    st.pyplot(plt.gcf())
+
+    # Graficos Mensuales para Grasas
+    plt.figure(figsize=(10, 6))
+    df_calorias_mensuales = df_meses.groupby("Mes")["Grasa"].sum().reset_index()
+    plt.bar(df_calorias_mensuales["Mes"].astype(str), df_calorias_mensuales["Grasa"],
+            color='red', alpha=0.7)
+    plt.title('Grasas Mensuales Consumidas (Últimos 12 Meses)')
+    plt.xlabel('Mes')
+    plt.ylabel('Grasas')
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    st.pyplot(plt.gcf())
+
+    # Graficos Mensuales para Proteínas
+    plt.figure(figsize=(10, 6))
+    df_calorias_mensuales = df_meses.groupby("Mes")["Proteinas"].sum().reset_index()
+    plt.bar(df_calorias_mensuales["Mes"].astype(str), df_calorias_mensuales["Proteinas"],
+            color='purple', alpha=0.7)
+    plt.title('Proteínas Mensuales Consumidas (Últimos 12 Meses)')
+    plt.xlabel('Mes')
+    plt.ylabel('Proteínas (g)')
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    st.pyplot(plt.gcf())
+
 else:
-    st.write("Si desea ver sus datos nutricionales y recomendaciones, "
-         "Inicie sesion o Registrese")
+    st.write("Si desea ver sus datos nutricionales "
+         "y gráficas correspondientes,Inicie sesion o Registrese")
