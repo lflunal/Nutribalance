@@ -437,66 +437,66 @@ boton_calcular = st.button("CALCULAR")
 
 # Verifica si el usuario presiona el boton
 if boton_calcular:
-  st.write("### RECOMENDACIONES ")
+  st.write("### RECOMENDACIONES")
 
-    # Verifica si el usuario inicio sesion
-    if st.session_state["authentication_status"]:
+  # Verifica si el usuario inicio sesion
+  if st.session_state["authentication_status"]:
 
-        # Verificar si el usuario ha ingresado valores válidos
-        if peso > 0 and altura > 0:
-            # Calcular el IMC
-            altura_metros = altura / 100
-            imc = peso / (altura_metros ** 2)
+      # Verificar si el usuario ha ingresado valores válidos
+      if peso > 0 and altura > 0:
+          # Calcular el IMC
+          altura_metros = altura / 100
+          imc = peso / (altura_metros ** 2)
 
-            # Determinar la categoría de IMC basada en el sexo
-            if sexo == "Masculino":
-                if isinstance(imc, str):
-                    st.write(imc)
-                else:
-                    if imc < 18.5:
-                        categoria = "Bajo peso"
-                    elif 18.5 <= imc < 24.9:
-                        categoria = "Peso normal"
-                    elif 24.9 <= imc < 29.9:
-                        categoria = "Sobrepeso"
-                    else:
-                        categoria = "Obesidad"
-                    st.write(f"Tu IMC es {imc:.2f}, lo que corresponde"
-                             "a la categoría de "
-                f"{categoria} para hombres.")
+          # Determinar la categoría de IMC basada en el sexo
+          if sexo == "Masculino":
+              if isinstance(imc, str):
+                  st.write(imc)
+              else:
+                  if imc < 18.5:
+                      categoria = "Bajo peso"
+                  elif 18.5 <= imc < 24.9:
+                      categoria = "Peso normal"
+                  elif 24.9 <= imc < 29.9:
+                      categoria = "Sobrepeso"
+                  else:
+                      categoria = "Obesidad"
+                  st.write(f"Tu IMC es {imc:.2f}, lo que corresponde"
+                           "a la categoría de "
+                           f"{categoria} para hombres.")
 
+          elif sexo == "Femenino":
+              if isinstance(imc, str):
+                  st.write(imc)
+              else:
+                  if imc < 18.5:
+                      categoria = "Bajo peso"
+                  elif 18.5 <= imc < 24.9:
+                      categoria = "Peso normal"
+                  elif 24.9 <= imc < 29.9:
+                      categoria = "Sobrepeso"
+                  else:
+                      categoria = "Obesidad"
+                  st.write(f"Tu IMC es {imc:.2f}, lo que corresponde"
+                           "a la categoría de "
+                           f"{categoria} para mujeres.")
+      else:
+          st.write("Por favor, ingresa valores válidos para peso y altura.")
+      calorias_diarias = calcular_calorias_diarias(sexo, peso, altura,
+                                                   edad, nivel_actividad)
 
-            elif sexo == "Femenino":
-                if isinstance(imc, str):
-                    st.write(imc)
-                else:
-                    if imc < 18.5:
-                        categoria = "Bajo peso"
-                    elif 18.5 <= imc < 24.9:
-                        categoria = "Peso normal"
-                    elif 24.9 <= imc < 29.9:
-                        categoria = "Sobrepeso"
-                    else:
-                        categoria = "Obesidad"
-                    st.write(f"Tu IMC es {imc:.2f}, lo que corresponde"
-                             "a la categoría de "
-                f"{categoria} para mujeres.")
-        else:
-            st.write("Por favor, ingresa valores válidos para peso y altura.")
-        calorias_diarias = calcular_calorias_diarias(sexo, peso, altura,
-                                                     edad, nivel_actividad)
+      # Mostrar el resultado
+      st.write(f"Calorías necesarias en un día: "
+               f"{int(calorias_diarias)} calorías")
+      datos_usuario = get_datos_nutricionales(email)
 
-        # Mostrar el resultado
-        st.write(f"Calorías necesarias en un día: "
-         f"{int(calorias_diarias)} calorías")
-         datos_usuario = get_datos_nutricionales(email)
       # Convierte los datos a un formato que se puede utilizar fácilmente
       datos = []
       for comida in datos_usuario:
           try:
               fecha = datetime.strptime(comida[0], "%Y-%m-%d")
           except (ValueError, TypeError):
-            # Fecha predeterminada si hay un problema con el formato
+              # Fecha predeterminada si hay un problema con el formato
               fecha = datetime.now()
 
           calorias = comida[1] if len(comida) > 1 else 0
@@ -524,10 +524,14 @@ if boton_calcular:
       df_ultimos_7_dias = df[df['Fecha'] >= (datetime.now() - pd.DateOffset(days=7))]
 
       # Mostrar recomendaciones
-      #mostrar_diferencia_calorias(df_ultimos_7_dias["Calorias"].sum(),calcular_calorias_diarias,total_calorias_quemadas)
-      mostrar_diferencia_carbohidratos(df_ultimos_7_dias["Carbohidratos"].sum(),calcular_carbohidratos_diarios(calorias_diarias,df_ultimos_7_dias["Proteinas"].sum(),df_ultimos_7_dias["Grasa"].sum()))
-      mostrar_diferencia_proteinas(df_ultimos_7_dias["Proteinas"].sum(), calcular_proteinas_diarias(peso,objetivo))
-      mostrar_diferencia_grasas(df_ultimos_7_dias["Grasa"].sum(),calcular_grasas_diarias(peso, objetivo))
+      # mostrar_diferencia_calorias(df_ultimos_7_dias["Calorias"].sum(),calcular_calorias_diarias,total_calorias_quemadas)
+      mostrar_diferencia_carbohidratos(df_ultimos_7_dias["Carbohidratos"].sum(),
+                                       calcular_carbohidratos_diarios(calorias_diarias, df_ultimos_7_dias["Proteinas"].sum(),
+                                                                      df_ultimos_7_dias["Grasa"].sum()))
+      mostrar_diferencia_proteinas(df_ultimos_7_dias["Proteinas"].sum(),
+                                    calcular_proteinas_diarias(peso, objetivo))
+      mostrar_diferencia_grasas(df_ultimos_7_dias["Grasa"].sum(),
+                                 calcular_grasas_diarias(peso, objetivo))
 
-    else:
-        st.warning("Si desea calcular sus resultados debe iniciar sesion")
+  else:
+      st.warning("Si desea calcular sus resultados debe iniciar sesion")
