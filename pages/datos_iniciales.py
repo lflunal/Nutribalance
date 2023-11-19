@@ -172,34 +172,13 @@ st.markdown(footer,unsafe_allow_html=True)
 
 # Recomendaciones
 # Funcion calorias diarias
-def calcular_calorias_diarias(sexo, peso, altura, edad, nivel_actividad):
-    calorias_diarias = 0  # Inicializar la variable con un valor predeterminado
-
-    if sexo == "Masculino":
-        tmb = 88.362 + (13.397 * peso) + (4.799 * altura) - (5.677 * edad)
-    elif sexo == "Femenino":
-        tmb = 447.593 + (9.247 * peso) + (3.098 * altura) - (4.330 * edad)
-
-    if nivel_actividad == "Sedentario":
-        calorias_diarias = tmb * 1.2
-    elif nivel_actividad == "Ligera actividad":
-        calorias_diarias = tmb * 1.375
-    elif nivel_actividad == "Moderada actividad":
-        calorias_diarias = tmb * 1.55
-    elif nivel_actividad == "Alta actividad":
-        calorias_diarias = tmb * 1.725
-    elif nivel_actividad == "Muy alta actividad":
-        calorias_diarias = tmb * 1.9
-
-    return calorias_diarias
-
 # Funcion para mostrar recomendaciones de calorias segun los alimentos seleccionados
-def mostrar_diferencia_calorias(total_calorias_consumidas, total_calorias_quemadas, calorias_diarias):
-    diferencia_calorias = calorias_diarias - (total_calorias_consumidas - total_calorias_quemadas)
-    if diferencia_calorias > 0:
-        st.write(f"Has consumido {int(diferencia_calorias)} calorías en exceso hoy. Considera ajustar tu ingesta calórica.")
-    elif diferencia_calorias < 0:
-        st.write(f"Te faltan {int(abs(diferencia_calorias))} calorías para alcanzar tu ingesta calórica diaria. ¡Asegúrate de comer lo suficiente!")
+#def mostrar_diferencia_calorias(total_calorias_consumidas, total_calorias_quemadas, calorias_diarias):
+ #   diferencia_calorias = calorias_diarias - (total_calorias_consumidas - total_calorias_quemadas)
+  #  if diferencia_calorias > 0:
+   #     st.write(f"Has consumido {int(diferencia_calorias)} calorías en exceso hoy. Considera ajustar tu ingesta calórica.")
+    #elif diferencia_calorias < 0:
+     #   st.write(f"Te faltan {int(abs(diferencia_calorias))} calorías para alcanzar tu ingesta calórica diaria. ¡Asegúrate de comer lo suficiente!")
 
 
 # Funcion proteinas diarias
