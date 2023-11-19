@@ -179,14 +179,25 @@ if st.session_state["authentication_status"]:
     # Obtener el nombre del día de la semana
     df["DiaSemana"] = pd.to_datetime(df["Fecha"]).dt.strftime('%A')
 
-    # Obtener la fecha de hace 7 días a partir de la fecha
-    # más reciente en los datos
-    fecha_limite = df["Fecha"].max() - pd.DateOffset(days=6)
+    # Crear DataFrame con todos los días de la semana pasada
+    ultimo_dia = datetime.now().date()
+    dias_semana_pasada = pd.date_range(end=ultimo_dia, periods=7, freq="D")
+    df_ultimos_7_dias = pd.DataFrame({"Fecha": dias_semana_pasada})
 
-    # Filtrar los últimos 7 días
-    df_ultimos_7_dias = df[
-    df['Fecha'] >= (datetime.now() - pd.DateOffset(days=7))
-]
+    # Combinar con los datos reales
+    df_ultimos_7_dias = pd.merge(df_ultimos_7_dias, df, on="Fecha", how="left")
+
+    # Rellenar NaN (días sin datos) con 0
+    df_ultimos_7_dias = df_ultimos_7_dias.fillna(0)
+
+    # Ordenar por fecha
+    df_ultimos_7_dias = df_ultimos_7_dias.sort_values("Fecha")
+
+    # Restablecer índice
+    df_ultimos_7_dias = df_ultimos_7_dias.reset_index(drop=True)
+
+    
+    st.subheader("Graficos de tu consumo semanal")
 
     # Crear gráfico de barras de calorías diarias de los últimos 7 días
     plt.figure(figsize=(10, 6))
