@@ -543,23 +543,6 @@ if st.session_state["authentication_status"]:
 
 
     # Mostrar recomendaciones
-    st.write("RECOMENDACIONES")
-    # Agregar un menú desplegable para seleccionar el nivel de actividad física
-    nivel_actividad = st.selectbox("Selecciona tu nivel de actividad física:", [
-    "Sedentario",
-    "Ligera actividad",
-    "Moderada actividad",
-    "Alta actividad",
-    "Muy alta actividad"
-])
-
-    objetivo = st.selectbox("Selecciona tu objetivo:",
-                       ["Aumentar masa muscular", "Mantenerse en un peso",
-                        "Bajar de peso"])
-
-    # Solicitar al usuario ingresar peso
-    peso = st.number_input("Ingresa tu peso en kilogramos", min_value=0.1)
-
     #mostrar_diferencia_calorias(df_ultimos_7_dias["Calorias"].sum(),calcular_calorias_diarias,total_calorias_quemadas)
     mostrar_diferencia_carbohidratos(df_ultimos_7_dias["Carbohidratos"].sum(),calcular_carbohidratos_diarios)
     mostrar_diferencia_proteinas(df_ultimos_7_dias["Proteinas"].sum(), calcular_proteinas_diarias)
