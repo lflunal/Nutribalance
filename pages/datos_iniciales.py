@@ -467,80 +467,80 @@ if boton_calcular:
         st.write(f"Calorías necesarias en un día: "
          f"{int(calorias_diarias)} calorías")
          datos_usuario = get_datos_nutricionales(email)
-    # Convierte los datos a un formato que se puede utilizar fácilmente
-    datos = []
-    for comida in datos_usuario:
-        try:
-            fecha = datetime.strptime(comida[0], "%Y-%m-%d")
-        except (ValueError, TypeError):
-            fecha = datetime.now()  # Fecha predeterminada si hay un problema con el formato
+      # Convierte los datos a un formato que se puede utilizar fácilmente
+      datos = []
+      for comida in datos_usuario:
+          try:
+              fecha = datetime.strptime(comida[0], "%Y-%m-%d")
+          except (ValueError, TypeError):
+              fecha = datetime.now()  # Fecha predeterminada si hay un problema con el formato
 
-        calorias = comida[1] if len(comida) > 1 else 0
-        carbohidratos = comida[2] if len(comida) > 2 else 0
-        grasa = comida[3] if len(comida) > 3 else 0
-        fibra = comida[4] if len(comida) > 4 else 0
-        proteinas = comida[5] if len(comida) > 5 else 0
-        datos.append([fecha, calorias, carbohidratos, grasa, fibra, proteinas])
+          calorias = comida[1] if len(comida) > 1 else 0
+          carbohidratos = comida[2] if len(comida) > 2 else 0
+          grasa = comida[3] if len(comida) > 3 else 0
+          fibra = comida[4] if len(comida) > 4 else 0
+          proteinas = comida[5] if len(comida) > 5 else 0
+          datos.append([fecha, calorias, carbohidratos, grasa, fibra, proteinas])
 
-    # Crea un DataFrame de pandas
-    columnas = ["Fecha", "Calorias", "Carbohidratos", "Grasa", "Fibra", "Proteinas"]
-    df = pd.DataFrame(datos, columns=columnas)
+      # Crea un DataFrame de pandas
+      columnas = ["Fecha", "Calorias", "Carbohidratos", "Grasa", "Fibra", "Proteinas"]
+      df = pd.DataFrame(datos, columns=columnas)
 
-    # Calcular calorías semanales
-    df["DiaSemana"] = pd.to_datetime(df["Fecha"]).dt.strftime('%A')  # Obtener el nombre del día de la semana
+      # Calcular calorías semanales
+      df["DiaSemana"] = pd.to_datetime(df["Fecha"]).dt.strftime('%A')  # Obtener el nombre del día de la semana
 
-    # Obtener la fecha de hace 7 días a partir de la fecha más reciente en los datos
-    fecha_limite = df["Fecha"].max() - pd.DateOffset(days=6)
+      # Obtener la fecha de hace 7 días a partir de la fecha más reciente en los datos
+      fecha_limite = df["Fecha"].max() - pd.DateOffset(days=6)
 
-    # Filtrar los últimos 7 días
-    df_ultimos_7_dias = df[df['Fecha'] >= (datetime.now() - pd.DateOffset(days=7))]
+      # Filtrar los últimos 7 días
+      df_ultimos_7_dias = df[df['Fecha'] >= (datetime.now() - pd.DateOffset(days=7))]
 
-    # Crear gráfico de barras de calorías diarias de los últimos 7 días
-    plt.figure(figsize=(10, 6))
-    plt.bar(df_ultimos_7_dias["Fecha"], df_ultimos_7_dias["Calorias"], color='blue', alpha=0.7)
-    plt.title('Calorías Diarias Consumidas (Últimos 7 Días)')
-    plt.xlabel('Fecha')
-    plt.ylabel('Calorías')
-    plt.grid(True)
-    plt.xticks(rotation=45)  # Rotar etiquetas del eje x para mayor legibilidad
-    st.pyplot(plt.gcf())
+      # Crear gráfico de barras de calorías diarias de los últimos 7 días
+      plt.figure(figsize=(10, 6))
+      plt.bar(df_ultimos_7_dias["Fecha"], df_ultimos_7_dias["Calorias"], color='blue', alpha=0.7)
+      plt.title('Calorías Diarias Consumidas (Últimos 7 Días)')
+      plt.xlabel('Fecha')
+      plt.ylabel('Calorías')
+      plt.grid(True)
+      plt.xticks(rotation=45)  # Rotar etiquetas del eje x para mayor legibilidad
+      st.pyplot(plt.gcf())
 
-    # Crear gráfico de barras de carbohidratos diarios de los últimos 7 días
-    plt.figure(figsize=(10, 6))
-    plt.bar(df_ultimos_7_dias["Fecha"], df_ultimos_7_dias["Carbohidratos"], color='green', alpha=0.7)
-    plt.title('Carbohidratos Diarios Consumidos (Últimos 7 Días)')
-    plt.xlabel('Fecha')
-    plt.ylabel('Carbohidratos')
-    plt.grid(True)
-    plt.xticks(rotation=45)
-    st.pyplot(plt.gcf())
+      # Crear gráfico de barras de carbohidratos diarios de los últimos 7 días
+      plt.figure(figsize=(10, 6))
+      plt.bar(df_ultimos_7_dias["Fecha"], df_ultimos_7_dias["Carbohidratos"], color='green', alpha=0.7)
+      plt.title('Carbohidratos Diarios Consumidos (Últimos 7 Días)')
+      plt.xlabel('Fecha')
+      plt.ylabel('Carbohidratos')
+      plt.grid(True)
+      plt.xticks(rotation=45)
+      st.pyplot(plt.gcf())
 
-    # Crear gráfico de barras de grasa diaria de los últimos 7 días
-    plt.figure(figsize=(10, 6))
-    plt.bar(df_ultimos_7_dias["Fecha"], df_ultimos_7_dias["Grasa"], color='red', alpha=0.7)
-    plt.title('Grasa Diaria Consumida (Últimos 7 Días)')
-    plt.xlabel('Fecha')
-    plt.ylabel('Grasas')
-    plt.grid(True)
-    plt.xticks(rotation=45)
-    st.pyplot(plt.gcf())
+      # Crear gráfico de barras de grasa diaria de los últimos 7 días
+      plt.figure(figsize=(10, 6))
+      plt.bar(df_ultimos_7_dias["Fecha"], df_ultimos_7_dias["Grasa"], color='red', alpha=0.7)
+      plt.title('Grasa Diaria Consumida (Últimos 7 Días)')
+      plt.xlabel('Fecha')
+      plt.ylabel('Grasas')
+      plt.grid(True)
+      plt.xticks(rotation=45)
+      st.pyplot(plt.gcf())
 
-    # Crear gráfico de barras de proteínas diarias de los últimos 7 días
-    plt.figure(figsize=(10, 6))
-    plt.bar(df_ultimos_7_dias["Fecha"], df_ultimos_7_dias["Proteinas"], color='purple', alpha=0.7)
-    plt.title('Proteínas Diarias Consumidas (Últimos 7 Días)')
-    plt.xlabel('Fecha')
-    plt.ylabel('Proteínas (g)')
-    plt.grid(True)
-    plt.xticks(rotation=45)
-    st.pyplot(plt.gcf())
+      # Crear gráfico de barras de proteínas diarias de los últimos 7 días
+      plt.figure(figsize=(10, 6))
+      plt.bar(df_ultimos_7_dias["Fecha"], df_ultimos_7_dias["Proteinas"], color='purple', alpha=0.7)
+      plt.title('Proteínas Diarias Consumidas (Últimos 7 Días)')
+      plt.xlabel('Fecha')
+      plt.ylabel('Proteínas (g)')
+      plt.grid(True)
+      plt.xticks(rotation=45)
+      st.pyplot(plt.gcf())
 
 
-    # Mostrar recomendaciones
-    #mostrar_diferencia_calorias(df_ultimos_7_dias["Calorias"].sum(),calcular_calorias_diarias,total_calorias_quemadas)
-    mostrar_diferencia_carbohidratos(df_ultimos_7_dias["Carbohidratos"].sum(),calcular_carbohidratos_diarios(calorias_diarias,df_ultimos_7_dias["Proteinas"].sum(),df_ultimos_7_dias["Grasa"].sum()))
-    mostrar_diferencia_proteinas(df_ultimos_7_dias["Proteinas"].sum(), calcular_proteinas_diarias(peso,objetivo))
-    mostrar_diferencia_grasas(df_ultimos_7_dias["Grasa"].sum(),calcular_grasas_diarias(peso, objetivo))
+      # Mostrar recomendaciones
+      #mostrar_diferencia_calorias(df_ultimos_7_dias["Calorias"].sum(),calcular_calorias_diarias,total_calorias_quemadas)
+      mostrar_diferencia_carbohidratos(df_ultimos_7_dias["Carbohidratos"].sum(),calcular_carbohidratos_diarios(calorias_diarias,df_ultimos_7_dias["Proteinas"].sum(),df_ultimos_7_dias["Grasa"].sum()))
+      mostrar_diferencia_proteinas(df_ultimos_7_dias["Proteinas"].sum(), calcular_proteinas_diarias(peso,objetivo))
+      mostrar_diferencia_grasas(df_ultimos_7_dias["Grasa"].sum(),calcular_grasas_diarias(peso, objetivo))
 
     else:
         st.warning("Si desea calcular su IMC debe iniciar sesion")
