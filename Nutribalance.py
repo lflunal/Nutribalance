@@ -196,8 +196,8 @@ if st.session_state["authentication_status"]:
     # Restablecer índice
     df_ultimos_7_dias = df_ultimos_7_dias.reset_index(drop=True)
 
-    
-    st.subheader("Graficos de tu consumo semanal")
+    tipo_diario = st.selectbox("Selecciona la variable para el gráfico diario", ["Calorías", "Carbohidratos", "Grasa", "Proteínas", "Fibra"])
+    st.subheader(f"Grafico de tu consumo diario de {tipo_diario}")
 
     # Crear gráfico de barras de calorías diarias de los últimos 7 días
     plt.figure(figsize=(10, 6))
@@ -207,7 +207,7 @@ if st.session_state["authentication_status"]:
     plt.xlabel('Fecha')
     plt.ylabel('Calorías')
     plt.grid(True)
-    plt.xticks(rotation=45)  # Rotar etiquetas del eje x para mayor legibilidad
+    plt.xticks(rotation=45)
     st.pyplot(plt.gcf())
 
     # Crear gráfico de barras de carbohidratos diarios de los últimos 7 días
@@ -238,6 +238,64 @@ if st.session_state["authentication_status"]:
             color='purple', alpha=0.7)
     plt.title('Proteínas Diarias Consumidas (Últimos 7 Días)')
     plt.xlabel('Fecha')
+    plt.ylabel('Proteínas (g)')
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    st.pyplot(plt.gcf())
+    
+    # Graficos Mensuales
+    st.subheader("Graficos de tu consumo mensual")
+    # Convertir la columna "Fecha" a formato datetime
+    df["Fecha"] = pd.to_datetime(df["Fecha"])
+
+    # Filtrar los últimos 12 meses
+    fecha_limite = df["Fecha"].max() - pd.DateOffset(months=12)
+    df_meses = df[df['Fecha'] >= fecha_limite]
+
+    # Crear gráfico de barras de calorías mensuales de los últimos 12 meses
+    plt.figure(figsize=(10, 6))
+    df_meses["Mes"] = df_meses["Fecha"].dt.to_period("M")
+    df_calorias_mensuales = df_meses.groupby("Mes")["Calorias"].sum().reset_index()
+    plt.bar(df_calorias_mensuales["Mes"].astype(str), df_calorias_mensuales["Calorias"],
+            color='blue', alpha=0.7)
+    plt.title('Calorías Mensuales Consumidas (Últimos 12 Meses)')
+    plt.xlabel('Mes')
+    plt.ylabel('Calorías')
+    plt.grid(True)
+    plt.xticks(rotation=45) 
+    st.pyplot(plt.gcf())
+
+    # Graficos Mensuales para Carbohidratos
+    plt.figure(figsize=(10, 6))
+    df_calorias_mensuales = df_meses.groupby("Mes")["Carbohidratos"].sum().reset_index()
+    plt.bar(df_calorias_mensuales["Mes"].astype(str), df_calorias_mensuales["Carbohidratos"],
+            color='green', alpha=0.7)
+    plt.title('Carbohidratos Mensuales Consumidos (Últimos 12 Meses)')
+    plt.xlabel('Mes')
+    plt.ylabel('Carbohidratos')
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    st.pyplot(plt.gcf())
+
+    # Graficos Mensuales para Grasas
+    plt.figure(figsize=(10, 6))
+    df_calorias_mensuales = df_meses.groupby("Mes")["Grasa"].sum().reset_index()
+    plt.bar(df_calorias_mensuales["Mes"].astype(str), df_calorias_mensuales["Grasa"],
+            color='red', alpha=0.7)
+    plt.title('Grasas Mensuales Consumidas (Últimos 12 Meses)')
+    plt.xlabel('Mes')
+    plt.ylabel('Grasas')
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    st.pyplot(plt.gcf())
+
+    # Graficos Mensuales para Proteínas
+    plt.figure(figsize=(10, 6))
+    df_calorias_mensuales = df_meses.groupby("Mes")["Proteinas"].sum().reset_index()
+    plt.bar(df_calorias_mensuales["Mes"].astype(str), df_calorias_mensuales["Proteinas"],
+            color='purple', alpha=0.7)
+    plt.title('Proteínas Mensuales Consumidas (Últimos 12 Meses)')
+    plt.xlabel('Mes')
     plt.ylabel('Proteínas (g)')
     plt.grid(True)
     plt.xticks(rotation=45)
