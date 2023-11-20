@@ -167,8 +167,7 @@ def registro():
     st.write("Debe aceptar los términos y condiciones antes de"
          "poder enviar el formulario")
     aceptar_terminos = st.checkbox("Acepto los [Términos y Condiciones]"
-    "(https://github.com/\lflunal/ppi_20/blob/Luis-Lopez/Politica%20de"
-    "%20Tratamiento%20de%20Datos.md)")
+"(https://github.com/lflunal/ppi_20/blob/main/Politica%20de%20Tratamiento%20de%20Datos.md)")
 
     # Si se aceptan los términos y condiciones habilitar el registro
     if aceptar_terminos:
