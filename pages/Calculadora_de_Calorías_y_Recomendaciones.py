@@ -390,7 +390,7 @@ if st.session_state["authentication_status"]:
 
     # Solicitar al usuario ingresar peso
     height = st.number_input("Ingresa tu altura en cm sin puntos ni comas")
-    altura = int(altura)
+    altura = int(height)
 
     # Recolectar los datos de un usuario que haya ingresado
     #if st.session_state["authentication_status"]:
