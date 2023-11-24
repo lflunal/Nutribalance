@@ -190,7 +190,7 @@ def registro():
             password = st.text_input("Contraseña",
                             placeholder="Ingrese su contraseña", type="password")
             # Boton de envio de datos de registro
-            st.form_submit_button("Registrate")
+            submit_button = st.form_submit_button("Registrate")
         # Revisar validez de los datos ingresados por el usuario
         # y registro a la DB
         if email and username and age and height and password:
