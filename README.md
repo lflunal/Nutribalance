@@ -19,3 +19,6 @@ Nutribalance es una aplicación web enfocada en el mejoramiento de la nutricion 
 
 [GNU GPL V3](https://www.gnu.org/licenses/gpl-3.0.html)
 
+### Datos
+La base de datos esta alojada en [DETA](https://deta.space/)
+

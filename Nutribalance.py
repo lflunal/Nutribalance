@@ -106,9 +106,6 @@ st.markdown("## Características de la app")
 st.write("Calcular la información nutricional de las comidas del usuario.")
 st.write("Una vez registrado, revisar el progreso de las rutinas "
 "alimentarias del usuario.")
-st.write("Sincronización con dispositivos como relojes inteligentes para"
-"hacer seguimiento activo de los pasos del usuario y tenerlos en "
-"cuenta en la revisión del progreso.")
 st.write("Recomendaciones alimentarias basadas en los objetivos "
 "personales del usuario.")
 st.write("Las recomendaciones tendrán en cuenta alergias o intolerancias que "
