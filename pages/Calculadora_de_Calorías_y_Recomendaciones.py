@@ -9,7 +9,6 @@ import re
 import streamlit_authenticator as stauth
 from deta import Deta
 from datetime import datetime
-from datetime import time
 import matplotlib.pyplot as plt
 
 # Almacenamos la key de la base de datos en una constante
@@ -61,11 +60,14 @@ def get_user_age(sel_user):
     """
 
     users = db.fetch()
-    age = 0
+    current_date = datetime.today()
+
     for user in users.items:
         if user["username"] == sel_user:
-            age = user["age"]
-            return int(age)
+            dob_str = user["age"]
+            dob = datetime.strptime(dob_str, "%Y-%m-%d").date()
+            age = (current_date.date() - dob).days // 365
+            return age
 
 # Funcion que retorna los nombres de usuario de los usuarios registrados
 def get_usernames_usuarios():
@@ -390,7 +392,7 @@ if st.session_state["authentication_status"]:
 
     # Solicitar al usuario ingresar peso
     height = st.number_input("Ingresa tu altura en cm sin puntos ni comas")
-    altura = int(altura)
+    altura = int(height)
 
     # Recolectar los datos de un usuario que haya ingresado
     #if st.session_state["authentication_status"]:
