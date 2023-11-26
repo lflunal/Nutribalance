@@ -182,25 +182,27 @@ def registro():
             username = st.text_input("Usuario",
                                     placeholder="Ingrese su nombre de usuario")
             dob = st.date_input("Fecha de Nacimiento",
-                               min_value=datetime(1900, 1, 1), max_value=datetime.today())
-           # Calcular la edad a partir de la fecha de nacimiento
-            age = (datetime.today() - dob).days // 365
+                                min_value=datetime(1900, 1, 1),
+                                max_value=datetime.today())
             height = st.text_input("Altura (en cm sin puntos ni comas)",
                     placeholder="Ingrese su estatura en cm sin puntos ni comas")
             password = st.text_input("Contraseña",
                             placeholder="Ingrese su contraseña", type="password")
+            # Cambiar fecha del formulario a un formato almacenable en la DB
+            dob_str = dob.isoformat() if dob else None
+
             # Boton de envio de datos de registro
-            submit_button = st.form_submit_button("Registrate")
+            st.form_submit_button("Registrate")
         # Revisar validez de los datos ingresados por el usuario
         # y registro a la DB
-        if email and username and age and height and password:
+        if email and username and dob and height and password:
             if validar_email(email):
                 if email not in get_emails_usuarios():
                     if validar_username(username):
                         if username not in get_usernames_usuarios():
                             password_encriptada = stauth.Hasher([password]) \
                       .generate()
-                            insertar_usuario(email, username, age,
+                            insertar_usuario(email, username, dob_str,
                                              height, password_encriptada[0])
                             st.success("Cuenta creada con exito!")
                         else:
@@ -214,38 +216,37 @@ def registro():
                 st.warning("Email invalido")
         else:
             st.warning("Debe rellenar todos los campos")
+    else:
+        st.warning("Debes aceptar los terminos y condiciones antes de poder registrarte")
 
 # Manejo de posibles errores
-try:
-    # Se almacenan los datos necesarios de la DB
-    users = fetch_usuarios()
-    emails = get_emails_usuarios()
-    usernames = get_usernames_usuarios()
-    passwords = [user["password"] for user in users]
 
-    # Se crea el diccionario credentials necesario para el
-    # funcionamiento del autenticador de cuentas
-    credentials = {"usernames" : {}}
-    for index in range(len(emails)):
-        credentials["usernames"][usernames[index]] = {"name" : emails[index],
-                                                 "password" : passwords[index]}
+# Se almacenan los datos necesarios de la DB
+users = fetch_usuarios()
+emails = get_emails_usuarios()
+usernames = get_usernames_usuarios()
+passwords = [user["password"] for user in users]
 
-    # Creacion del autenticador
-    Authenticator = stauth.Authenticate(credentials, cookie_name="Streamlit",
-                                        key="cookiekey", cookie_expiry_days=3)
+# Se crea el diccionario credentials necesario para el
+# funcionamiento del autenticador de cuentas
+credentials = {"usernames" : {}}
+for index in range(len(emails)):
+    credentials["usernames"][usernames[index]] = {"name" : emails[index],
+                                                "password" : passwords[index]}
 
-    # Crear boton de Cerrar sesion si la sesion fue iniciada
-    if st.session_state["authentication_status"]:
-        Authenticator.logout("Cerrar sesion", location="sidebar")
-        st.write("Ya ha iniciado sesion")
+# Creacion del autenticador
+Authenticator = stauth.Authenticate(credentials, cookie_name="Streamlit",
+                                    key="cookiekey", cookie_expiry_days=3)
 
-    # Si la sesion no fue iniciada, ejecutar el formulario de registro
-    else:
-        registro()
+# Crear boton de Cerrar sesion si la sesion fue iniciada
+if st.session_state["authentication_status"]:
+    Authenticator.logout("Cerrar sesion", location="sidebar")
+    st.write("Ya ha iniciado sesion")
 
-# Informar de que hubo una excepcion en caso de que la haya
-except:
-    st.error("Debes aceptar los términos y condiciones antes de registrarte")
+# Si la sesion no fue iniciada, ejecutar el formulario de registro
+else:
+    registro()
+
 
 # Crear pie de pagina con los datos de contacto de los creadores
 footer = """
