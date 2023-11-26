@@ -10,11 +10,14 @@ Original file is located at
 # Importar librerias
 import re
 import pandas as pd
+import numpy as np
 import streamlit as st
-from streamlit_lottie import st_lottie
-import requests
+import streamlit_extras
 import streamlit_authenticator as stauth
 from deta import Deta
+from datetime import datetime
+from datetime import time
+import matplotlib.pyplot as plt
 
 # Almacenamos la key de la base de datos en una constante
 DETA_KEY = "e0qgr2zg4tq_mbZWcCg7iGCpWFBbCy3GGFjEYHdFmZYR"
@@ -204,18 +207,6 @@ if st.session_state["authentication_status"]:
                                  "Proteinas"])
 
     # Mostrar los valores correspondientes según el tipo seleccionado
-    if tipo_valor == "Calorias":
-      valores_calorias = df_ultimos_7_dias["Calorias"].tolist()
-      st.write("Valores de calorías en la semana: ", valores_calorias)
-
-    if tipo_valor == "Grasas":
-      valores_grasas = df_ultimos_7_dias["Grasas"].tolist()
-      st.write("Valores de Grasas en la semana:", valores_grasas)
-
-    if tipo_valor == "Carbohidratos":
-      valores_carbohidratos = df_ultimos_7_dias["Carbohidratos"].tolist()
-      st.write("Valores de Carbohidratos en la semana:", valores_carbohidratos)
-
-    if tipo_valor == "Proteinas":
-      valores_proteinas = df_ultimos_7_dias["Proteinas"].tolist()
-      st.write("Valores de Proteinas en la semana:", valores_proteinas)
+    if tipo_valor in df_ultimos_7_dias.columns:
+      suma_total = np.sum(df_ultimos_7_dias[tipo_valor])
+      st.write(f"Consumo Total de {tipo_valor}: {suma_total:.2f}")
