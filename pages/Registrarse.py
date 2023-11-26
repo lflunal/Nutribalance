@@ -25,7 +25,7 @@ deta = Deta(DETA_KEY)
 db = deta.Base("NutribalanceUsers")
 
 # Funcion para registrar usuarios en la DB
-def insertar_usuario(email, username, age, height, password):
+def insertar_usuario(email, username, age, password):
     """
     Agrega un nuevo usuario a la Base de Datos.
 
@@ -47,8 +47,8 @@ def insertar_usuario(email, username, age, height, password):
     """
     # Agregar un nuevo usuario a la Base de Datos con la
     # información proporcionada
-    db.put({"key": email, "username": username, "age": age, "height": height,
-            "password": password, "food": []})
+    db.put({"key": email, "username": username, "age": age, "password": password,
+            "food": []})
 
 # Funcion que retorna los usuarios registrados
 def fetch_usuarios():
@@ -184,8 +184,6 @@ def registro():
             dob = st.date_input("Fecha de Nacimiento",
                                 min_value=datetime(1900, 1, 1),
                                 max_value=datetime.today())
-            height = st.text_input("Altura (en cm sin puntos ni comas)",
-                    placeholder="Ingrese su estatura en cm sin puntos ni comas")
             password = st.text_input("Contraseña",
                             placeholder="Ingrese su contraseña", type="password")
             # Cambiar fecha del formulario a un formato almacenable en la DB
@@ -195,7 +193,7 @@ def registro():
             st.form_submit_button("Registrate")
         # Revisar validez de los datos ingresados por el usuario
         # y registro a la DB
-        if email and username and dob and height and password:
+        if email and username and dob and password:
             if validar_email(email):
                 if email not in get_emails_usuarios():
                     if validar_username(username):
@@ -203,7 +201,7 @@ def registro():
                             password_encriptada = stauth.Hasher([password]) \
                       .generate()
                             insertar_usuario(email, username, dob_str,
-                                             height, password_encriptada[0])
+                                            password_encriptada[0])
                             st.success("Cuenta creada con exito!")
                         else:
                             st.warning("Nombre de usuario en uso")
