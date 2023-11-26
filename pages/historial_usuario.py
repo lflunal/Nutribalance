@@ -134,4 +134,4 @@ st.markdown(footer,unsafe_allow_html=True)
 st.title("Historial de alimentos y ejercicios")
 
 st.write("En esta ventana podrá encontrar su registro de alimentos y"
-"ejercicios anteriormente registrados")
+" ejercicios anteriormente registrados")
