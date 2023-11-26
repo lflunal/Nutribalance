@@ -202,19 +202,3 @@ if st.session_state["authentication_status"]:
     if tipo_valor in df_ultimos_7_dias.columns:
       suma_total = np.sum(df_ultimos_7_dias[tipo_valor])
       st.write(f"Consumo Total de {tipo_valor}: {suma_total:.2f}")
-
-    if tipo_valor == "Calorias":
-      valores_calorias = df_ultimos_7_dias["Calorias"].tolist()
-      st.write("Valores de calorías en la semana: ", valores_calorias)
-
-    if tipo_valor == "Grasas":
-      valores_grasas = df_ultimos_7_dias["Grasas"].tolist()
-      st.write("Valores de Grasas en la semana:", valores_grasas)
-
-    if tipo_valor == "Carbohidratos":
-      valores_carbohidratos = df_ultimos_7_dias["Carbohidratos"].tolist()
-      st.write("Valores de Carbohidratos en la semana:", valores_carbohidratos)
-
-    if tipo_valor == "Proteinas":
-      valores_proteinas = df_ultimos_7_dias["Proteinas"].tolist()
-      st.write("Valores de Proteinas en la semana:", valores_proteinas)
