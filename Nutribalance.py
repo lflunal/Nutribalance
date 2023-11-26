@@ -95,6 +95,26 @@ def get_datos_nutricionales(email):
 # Titulo en la pagina
 st.title("Nutribalance")
 
+# Descripcion de la app
+st.write("Nutribalance es una aplicación web enfocada en el mejoramiento de la"
+"nutricion general de los usuarios, basandose en 3 objetivos básicos de los"
+         "mismos: Mantenerse en un peso, Bajar de peso o Subir de peso.")
+
+st.markdown("## Características de la app")
+
+# Caracteristicas de la app
+st.write("Calcular la información nutricional de las comidas del usuario.")
+st.write("Una vez registrado, revisar el progreso de las rutinas "
+"alimentarias del usuario.")
+st.write("Recomendaciones alimentarias basadas en los objetivos "
+"personales del usuario.")
+st.write("Las recomendaciones tendrán en cuenta alergias o intolerancias que "
+"tenga el usuario frente a ciertos alimentos/ingredientes, "
+"si este lo especifica.")
+
+# Boton para mostrar las graficas
+st.button("Graficar")
+
 # Manejo de posibles errores
 try:
     # Se almacenan los datos necesarios de la DB
@@ -196,8 +216,6 @@ if st.session_state["authentication_status"]:
     # Restablecer índice
     df_ultimos_7_dias = df_ultimos_7_dias.reset_index(drop=True)
 
-    # tipo_diario = st.selectbox("Selecciona la variable para el gráfico diario",
-    # ["Calorías", "Carbohidratos", "Grasa", "Proteínas", "Fibra"])
     st.subheader(f"Grafico de tu consumo diario semanal")
 
     # Crear gráfico de barras de calorías diarias de los últimos 7 días
@@ -243,7 +261,7 @@ if st.session_state["authentication_status"]:
     plt.grid(True)
     plt.xticks(rotation=45)
     st.pyplot(plt.gcf())
-    
+
     # Graficos Mensuales
     st.subheader("Graficos de tu consumo mensual")
     # Convertir la columna "Fecha" a formato datetime
@@ -264,7 +282,7 @@ if st.session_state["authentication_status"]:
     plt.xlabel('Mes')
     plt.ylabel('Calorías')
     plt.grid(True)
-    plt.xticks(rotation=45) 
+    plt.xticks(rotation=45)
     st.pyplot(plt.gcf())
 
     # Graficos Mensuales para Carbohidratos
@@ -305,5 +323,5 @@ if st.session_state["authentication_status"]:
     st.pyplot(plt.gcf())
 
 else:
-    st.write("Si desea ver sus datos nutricionales y recomendaciones, "
-         "Inicie sesion o Registrese")
+    st.write("Si desea ver sus datos nutricionales "
+         "y gráficas correspondientes,Inicie sesion o Registrese")
